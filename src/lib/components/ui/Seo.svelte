@@ -16,8 +16,8 @@
 <svelte:head>
     <title>MC Addon {title ? `| ${title}` : ""}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0EA5E9" />
-    <meta name="background-color" content="#020617" />
+    <meta name="theme-color" content="#FACC15" />
+    <meta name="background-color" content="#0A0A0A" />
     <meta name="author" content={author} />
 
     <!-- Open Graph / Facebook -->
