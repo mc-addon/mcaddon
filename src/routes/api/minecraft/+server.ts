@@ -50,19 +50,12 @@ export const POST = async ({ locals, request }) => {
 };
 
 async function getNameInfo(name: string) {
-    try {
-        let data: { id: string; name: string } | null = null;
-        const resp = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`);
-        data = await resp.json();
-        if (!resp.ok) {
-            const resp2 = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${name}`);
-            if (!resp2.ok) {
-                return null;
-            }
-            data = await resp2.json();
-        }
-        return data;
-    } catch {
+    name = encodeURIComponent(name.trim());
+    const resp = await fetch(`https://crafty.gg/players/${name}.json`);
+    if (resp.ok) {
+        const data = await resp.json();
+        return { id: data.id, name: data.username };
+    } else {
         return null;
     }
 }
