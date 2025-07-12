@@ -1,0 +1,73 @@
+import { PUBLIC_DISCORD_URL } from "$env/static/public";
+import type { DB } from "$lib/db";
+import { fetchSettings } from "$lib/db/funcs";
+import { error } from "@sveltejs/kit";
+import type { APIUser } from "discord-api-types/v10";
+
+export async function getNewAccessToken(refreshToken: string, clientID: string, clientSecret: string) {
+    const resp = await fetch(`${PUBLIC_DISCORD_URL}/oauth2/token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            client_id: clientID,
+            client_secret: clientSecret,
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+        }).toString(),
+    });
+
+    const data = await resp.json();
+    if (resp.ok) {
+        return data;
+    } else {
+        return null;
+    }
+}
+
+export async function getUserData(access_token: string): Promise<APIUser> {
+    const userDataResponse = await fetch(`${PUBLIC_DISCORD_URL}/users/@me`, {
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+        },
+    });
+    if (!userDataResponse.ok) {
+        error(userDataResponse.status, userDataResponse.statusText);
+    }
+
+    const userData: APIUser = await userDataResponse.json();
+
+    return userData;
+}
+
+export function getUserAvatar(
+    userID: string | null | undefined,
+    avatarHash: string | null | undefined,
+    ext: "webp" | "png" | "jpg" | "gif" = "webp",
+): string {
+    if (!userID || !avatarHash) {
+        return `https://cdn.discordapp.com/embed/avatars/0.png`;
+    }
+    return `https://cdn.discordapp.com/avatars/${userID}/${avatarHash}.${ext}`;
+}
+
+export async function isAdmin(db: DB, userID: string): Promise<boolean> {
+    const adminIDs = await fetchSettings(db, "adminIDs");
+    if (!adminIDs) {
+        return false;
+    }
+    return adminIDs.includes(userID);
+}
+
+export async function fetchUserData(baseURI: string, botToken: string, id: string) {
+    const resp = await fetch(`${baseURI}/users/${id}`, {
+        headers: {
+            Authorization: `Bot ${botToken}`,
+        },
+    });
+    if (!resp.ok) {
+        return { error: true };
+    }
+    return (await resp.json()) as APIUser;
+}
