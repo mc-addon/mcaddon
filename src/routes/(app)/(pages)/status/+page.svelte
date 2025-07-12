@@ -220,8 +220,8 @@
 <Seo
     title="Server Status"
     description="
-Java Server: \`{data.server.ip}:{servers[0].port}\` ({servers[0].status})
-Bedrock Server: \`{data.server.ip}:{servers[1].port}\` ({servers[1].status})
+Java Server: {data.server.ip}:{servers[0].port}
+Bedrock Server: {data.server.ip}:{servers[1].port}
 "
 />
 
