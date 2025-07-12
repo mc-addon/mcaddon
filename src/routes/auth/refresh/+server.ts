@@ -1,15 +1,14 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, JWT_SECRET } from "$env/static/private";
 import { signData } from "$lib/discord/jwt";
 import { getNewAccessToken, getUserData } from "$lib/discord/user";
-import { redirect } from "@sveltejs/kit";
-import { error } from "console";
+import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async ({ fetch, cookies }) => {
     const refreshToken: string | undefined = cookies.get("refresh_token");
 
     if (!refreshToken) {
-        throw error(401, "No refresh token found");
+        error(401, "No refresh token found");
     }
 
     const newToken = await getNewAccessToken(refreshToken, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET);
