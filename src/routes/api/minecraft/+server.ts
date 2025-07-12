@@ -53,6 +53,7 @@ async function getNameInfo(name: string) {
     try {
         let data: { id: string; name: string } | null = null;
         const resp = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`);
+        data = await resp.json();
         if (!resp.ok) {
             const resp2 = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${name}`);
             if (!resp2.ok) {
@@ -60,7 +61,6 @@ async function getNameInfo(name: string) {
             }
             data = await resp2.json();
         }
-        data = await resp.json();
         return data;
     } catch {
         return null;
