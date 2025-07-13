@@ -173,7 +173,7 @@
     onMount(() => {
         startPinging();
         return () => {
-            if (intervalId) clearInterval(intervalId);
+            stopPinging();
         };
     });
 
