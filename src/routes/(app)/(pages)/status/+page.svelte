@@ -91,7 +91,7 @@
         };
 
         // Check if the server IP and port are set
-        if (!data.server.ip || (!isBedrock && !data.server.javaPort) || (isBedrock && !data.server.bedrockPort)) {
+        if (!data.server?.ip || (!isBedrock && !data.server?.javaPort) || (isBedrock && !data.server?.bedrockPort)) {
             statusSetter("offline");
             timeSetter(null);
             dataSetter(null);
@@ -105,10 +105,10 @@
             const controller = new AbortController();
             setTimeout(() => controller.abort(), 15000);
 
-            const port = isBedrock ? data.server.bedrockPort : data.server.javaPort;
+            const port = isBedrock ? data.server?.bedrockPort : data.server?.javaPort;
             const url = isBedrock
-                ? `https://api.mcsrvstat.us/bedrock/3/${data.server.ip}:${port}`
-                : `https://api.mcsrvstat.us/3/${data.server.ip}:${port}`;
+                ? `https://api.mcsrvstat.us/bedrock/3/${data.server?.ip}:${port}`
+                : `https://api.mcsrvstat.us/3/${data.server?.ip}:${port}`;
 
             const response = await fetch(url, { signal: controller.signal });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -203,16 +203,16 @@
             status: javaPingStatus,
             responseTime: javaResponseTime,
             data: javaServerData,
-            port: data.server.javaPort || 25565, // Default port if settings are null
-            available: !!data.server.ip && !!data.server.javaPort,
+            port: data.server?.javaPort || 25565, // Default port if settings are null
+            available: !!data.server?.ip && !!data.server?.javaPort,
         },
         {
             name: "Bedrock Edition",
             status: bedrockPingStatus,
             responseTime: bedrockResponseTime,
             data: bedrockServerData,
-            port: data.server.bedrockPort || 19132, // Default port if settings are null
-            available: !!data.server.ip && !!data.server.bedrockPort,
+            port: data.server?.bedrockPort || 19132, // Default port if settings are null
+            available: !!data.server?.ip && !!data.server?.bedrockPort,
         },
     ]);
 </script>
@@ -220,8 +220,8 @@
 <Seo
     title="Server Status"
     description="
-Java Server: {data.server.ip}:{servers[0].port}
-Bedrock Server: {data.server.ip}:{servers[1].port}
+Java Server: {data.server?.ip}:{servers[0].port}
+Bedrock Server: {data.server?.ip}:{servers[1].port}
 "
 />
 
@@ -251,7 +251,7 @@ Bedrock Server: {data.server.ip}:{servers[1].port}
                         <button
                             class="flex cursor-copy justify-between"
                             onclick={() => {
-                                const address = `${data.server.ip}:${server.port}`;
+                                const address = `${data.server?.ip}:${server.port}`;
                                 navigator.clipboard
                                     .writeText(address)
                                     .then(() => {
@@ -263,7 +263,7 @@ Bedrock Server: {data.server.ip}:{servers[1].port}
                             }}
                         >
                             <span class="text-neutral-200">Address:</span>
-                            <span class="font-mono text-yellow-400">{data.server.ip}:{server.port}</span>
+                            <span class="font-mono text-yellow-400">{data.server?.ip}:{server.port}</span>
                         </button>
 
                         {#if server.data}
