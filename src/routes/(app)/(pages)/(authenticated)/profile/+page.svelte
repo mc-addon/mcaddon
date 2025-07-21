@@ -13,16 +13,18 @@
     let input: string = $state(data.userData?.minecraftName || "");
 
     // Admin settings state
-    let serverIP: string = $state(data.settings?.minecraftServer?.ip || "");
-    let bedrockServerPort: string = $state(String(data.settings?.minecraftServer?.bedrockPort || 19132));
-    let javaServerPort: string = $state(String(data.settings?.minecraftServer?.javaPort || 25565));
+    let javaServerIP: string = $state(data.settings?.minecraftServer?.java?.ip || "");
+    let bedrockServerIP: string = $state(data.settings?.minecraftServer?.bedrock?.ip || "");
+    let javaServerPort: string = $state(String(data.settings?.minecraftServer?.java?.port || 25565));
+    let bedrockServerPort: string = $state(String(data.settings?.minecraftServer?.bedrock?.port || 19132));
     let discordInvite: string = $state(data.settings?.discordServer || "");
     let adminUserInput: string = $state("");
 
     $effect(() => {
-        serverIP = data.settings?.minecraftServer?.ip || "";
-        bedrockServerPort = String(data.settings?.minecraftServer?.bedrockPort || 19132);
-        javaServerPort = String(data.settings?.minecraftServer?.javaPort || 25565);
+        javaServerIP = data.settings?.minecraftServer?.java?.ip || "";
+        bedrockServerIP = data.settings?.minecraftServer?.bedrock?.ip || "";
+        javaServerPort = String(data.settings?.minecraftServer?.java?.port || 25565);
+        bedrockServerPort = String(data.settings?.minecraftServer?.bedrock?.port || 19132);
         discordInvite = data.settings?.discordServer || "";
     });
 
@@ -56,8 +58,12 @@
     }
 
     async function updateServerSettings() {
-        if (!serverIP.trim()) {
-            toast.error("Server IP cannot be empty.");
+        if (!javaServerIP.trim()) {
+            toast.error("Java server IP cannot be empty.");
+            return;
+        }
+        if (!bedrockServerIP.trim()) {
+            toast.error("Bedrock server IP cannot be empty.");
             return;
         }
 
@@ -81,9 +87,14 @@
             body: JSON.stringify({
                 key: "minecraftServer",
                 value: {
-                    ip: serverIP.trim(),
-                    bedrockPort: bedrockPort,
-                    javaPort: javaPort,
+                    java: {
+                        ip: javaServerIP.trim(),
+                        port: javaPort,
+                    },
+                    bedrock: {
+                        ip: bedrockServerIP.trim(),
+                        port: bedrockPort,
+                    },
                 },
             }),
         }).then(async (response) => {
@@ -342,24 +353,25 @@
                             <h3 class="font-minecrafter mb-2 text-lg">Minecraft Server</h3>
                             <div class="flex flex-col gap-2 text-left">
                                 <div class="flex items-center gap-2">
-                                    <img src="/icons/grass_block.webp" alt="Server" class="h-6" />
+                                    <img src="/icons/creeper_head.webp" alt="Java" class="h-6" />
                                     <div>
-                                        <p class="text-xs text-neutral-400">Server IP</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.minecraftServer?.ip || "Not set"}</p>
+                                        <p class="text-xs text-neutral-400">Java Edition</p>
+                                        <p class="font-bold text-yellow-400">
+                                            {data.settings?.minecraftServer?.java?.ip || "Not set"}
+                                            :
+                                            {data.settings?.minecraftServer?.java?.port || "Not set"}
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <img src="/icons/creeper_head.webp" alt="Java Port" class="h-6" />
+                                    <img src="/icons/bedrock.webp" alt="Bedrock" class="h-6" />
                                     <div>
-                                        <p class="text-xs text-neutral-400">Java Port</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.minecraftServer?.javaPort || "Not set"}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <img src="/icons/bedrock.webp" alt="Bedrock Port" class="h-6" />
-                                    <div>
-                                        <p class="text-xs text-neutral-400">Bedrock Port</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.minecraftServer?.bedrockPort || "Not set"}</p>
+                                        <p class="text-xs text-neutral-400">Bedrock Edition</p>
+                                        <p class="font-bold text-yellow-400">
+                                            {data.settings?.minecraftServer?.bedrock?.ip || "Not set"}
+                                            :
+                                            {data.settings?.minecraftServer?.bedrock?.port || "Not set"}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -370,8 +382,17 @@
                                 <Button>Update Server Settings</Button>
                             {/snippet}
                             <div class="flex w-full flex-col gap-2">
-                                <Input bind:value={serverIP} placeholder="Enter server IP (e.g., play.example.com)" />
+                                <div class="flex items-center justify-start gap-2">
+                                    <img src="/icons/creeper_head.webp" alt="Java" class="h-6" />
+                                    <p class="text-xs text-neutral-200">Java Edition</p>
+                                </div>
+                                <Input bind:value={javaServerIP} placeholder="Enter Java server IP (e.g., play.example.com)" />
                                 <Input bind:value={javaServerPort} placeholder="Enter Java port (default: 25565)" />
+                                <div class="flex items-center justify-start gap-2">
+                                    <img src="/icons/bedrock.webp" alt="Bedrock" class="h-6" />
+                                    <p class="text-xs text-neutral-200">Bedrock Edition</p>
+                                </div>
+                                <Input bind:value={bedrockServerIP} placeholder="Enter Bedrock server IP (e.g., play.example.com)" />
                                 <Input bind:value={bedrockServerPort} placeholder="Enter Bedrock port (default: 19132)" />
                                 <Button onclick={updateServerSettings}>Update Server Settings</Button>
                             </div>

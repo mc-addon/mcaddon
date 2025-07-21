@@ -11,9 +11,14 @@ export const userTable = pgTable("user", {
 export interface SettingsMap {
     adminIDs: string[];
     minecraftServer: {
-        ip: string;
-        bedrockPort: number;
-        javaPort: number;
+        java: {
+            ip: string;
+            port: number;
+        };
+        bedrock: {
+            ip: string;
+            port: number;
+        };
     };
     discordServer: string;
 }
