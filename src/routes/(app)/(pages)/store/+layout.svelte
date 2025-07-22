@@ -242,7 +242,7 @@
 </Popup>
 
 <!-- Floating Basket Button -->
-{#if basket.packages.length > 0}
+{#if basket.packages.length > 0 && data.user}
     <div in:fade={{ duration: 200 }} class="fixed right-4 bottom-4 z-50">
         <Tooltip>
             {#snippet trigger()}

@@ -1,61 +1,71 @@
-import { fetchUser } from "$lib/db/funcs.js";
-import * as schema from "$lib/db/schema";
-import { json } from "@sveltejs/kit";
+import { JWT_SECRET } from "$env/static/private";
+import { userTable } from "$lib/db/schema.js";
+import type { MinecraftUserInfo } from "$lib/minecraft/types";
+import { getUserInfo } from "$lib/minecraft/user.js";
+import { signData } from "$lib/utils/jwt.js";
+import { json, type Cookies } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
-export const POST = async ({ locals, request }) => {
+async function setMinecraftAccount(type: "java" | "bedrock", username: string, cookies: Cookies) {
+    const info = await getUserInfo(username, type);
+    if (!info) {
+        return json({ error: "User not found" }, { status: 404 });
+    } else {
+        const expiresIn = 60 * 60 * 24 * 365; // 1 year
+        const token = await signData(info, JWT_SECRET, `${expiresIn}s`);
+        cookies.set("mc", token, {
+            path: "/",
+            maxAge: expiresIn,
+            sameSite: "none",
+            httpOnly: true,
+            secure: true,
+        });
+        return json({ success: true, info, type }, { status: 200 });
+    }
+}
+
+async function unsetMinecraftAccount(cookies: Cookies) {
+    cookies.delete("mc", { path: "/" });
+    return json({ success: true }, { status: 200 });
+}
+
+async function linkMinecraftAccount(locals: App.Locals, action: "link" | "unlink") {
     const user = locals.user;
     if (!user) {
         return json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userData = await fetchUser(locals.db, user.id);
 
-    const body = await request.json();
-    const status: "set" | "unset" = body.status;
+    const mc: MinecraftUserInfo | null = locals.mc;
 
-    if (status === "set") {
-        const name: string | null = body.name || null;
-        if (!name) {
-            return json({ error: "Name not provided" }, { status: 400 });
+    if (action === "unlink") {
+        await locals.db.update(userTable).set({ minecraft: null }).where(eq(userTable.userID, user.id));
+        return json({ success: true });
+    } else if (action === "link") {
+        if (!mc) {
+            return json({ error: "No Minecraft account set" }, { status: 400 });
         }
-
-        if (userData?.minecraftName === name) {
-            return json({ success: true }, { status: 200 });
-        } else {
-            const info = await getNameInfo(name);
-            if (!info) {
-                return json({ error: "Invalid name" }, { status: 400 });
-            }
-            await locals.db
-                .update(schema.userTable)
-                .set({
-                    minecraftID: info.id,
-                    minecraftName: info.name,
-                })
-                .where(eq(schema.userTable.userID, user.id));
-            return json({ success: true }, { status: 200 });
-        }
-    } else if (status === "unset") {
-        await locals.db
-            .update(schema.userTable)
-            .set({
-                minecraftID: null,
-                minecraftName: null,
-            })
-            .where(eq(schema.userTable.userID, user.id));
-        return json({ success: true }, { status: 200 });
+        await locals.db.update(userTable).set({ minecraft: mc }).where(eq(userTable.userID, user.id));
+        return json({ success: true });
     } else {
-        return json({ error: "Invalid status" }, { status: 400 });
+        return json({ error: "Invalid action" }, { status: 400 });
     }
-};
+}
 
-async function getNameInfo(name: string) {
-    name = encodeURIComponent(name.trim());
-    const resp = await fetch(`https://crafty.gg/players/${name}.json`);
-    if (resp.ok) {
-        const data = await resp.json();
-        return { id: data.id, name: data.username };
-    } else {
-        return null;
+export async function POST({ locals, request, cookies }) {
+    const { action, type, username } = await request.json();
+
+    if (!action || !["link", "unlink", "set", "unset"].includes(action)) {
+        return json({ error: "Invalid action" }, { status: 400 });
+    }
+
+    if (action === "set") {
+        if (!type || !username) {
+            return json({ error: `Missing ${!type ? "type" : "username"} parameter` }, { status: 400 });
+        }
+        return await setMinecraftAccount(type as "java" | "bedrock", username, cookies);
+    } else if (action === "unset") {
+        return await unsetMinecraftAccount(cookies);
+    } else if (action === "unlink" || action === "link") {
+        return await linkMinecraftAccount(locals, action);
     }
 }

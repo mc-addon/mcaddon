@@ -72,7 +72,7 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
             <div class="flex w-full flex-col gap-2">
                 <Button
                     iconName="chest"
-                    disabled={basketCooldownManager.isOnCooldown(data.pkg.id)}
+                    disabled={basketCooldownManager.isOnCooldown(data.pkg.id) || !data.user}
                     onclick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -95,6 +95,7 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
                 </Button>
                 <Button
                     loading={buyNowLoading}
+                    disabled={!data.user}
                     onclick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();

@@ -1,6 +1,6 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, JWT_SECRET } from "$env/static/private";
-import { signData } from "$lib/discord/jwt";
 import { getNewAccessToken, getUserData } from "$lib/discord/user";
+import { signData } from "$lib/utils/jwt";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 

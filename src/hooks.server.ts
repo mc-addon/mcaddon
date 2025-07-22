@@ -1,7 +1,8 @@
 import { JWT_SECRET, TEBEX_PRIVATE_KEY } from "$env/static/private";
 import { PUBLIC_TEBEX_TOKEN } from "$env/static/public";
 import { db } from "$lib/db";
-import { verifyData } from "$lib/discord/jwt";
+import type { MinecraftUserInfo } from "$lib/minecraft/types";
+import { verifyData } from "$lib/utils/jwt";
 import { redirect, type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 import type { APIUser } from "discord-api-types/v10";
@@ -20,10 +21,15 @@ const handleRefreshHook: Handle = async ({ event, resolve }) => {
 
 const setLocalsHook: Handle = async ({ event, resolve }) => {
     const user: string | undefined = event.cookies.get("user");
+    const mc: string | undefined = event.cookies.get("mc");
 
     if (user) {
         const data = await verifyData<APIUser>(user, JWT_SECRET);
         event.locals.user = data;
+    }
+    if (mc) {
+        const mcData = await verifyData<MinecraftUserInfo>(mc, JWT_SECRET);
+        event.locals.mc = mcData;
     }
     event.locals.db = db;
     event.locals.tebex = new TebexHeadless(PUBLIC_TEBEX_TOKEN, TEBEX_PRIVATE_KEY);

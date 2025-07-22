@@ -2,6 +2,7 @@ import { DISCORD_BOT_TOKEN } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import { fetchSettings } from "$lib/db/funcs";
 import { isAdmin } from "$lib/discord/user";
+import { redirect } from "@sveltejs/kit";
 import type { APIUser } from "discord-api-types/v10";
 import type { PageServerLoad } from "./$types";
 
@@ -26,6 +27,8 @@ export const load: PageServerLoad = async ({ locals }) => {
                 });
             }
         }
+    } else {
+        redirect(303, "/");
     }
 
     return {

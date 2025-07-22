@@ -11,7 +11,15 @@
         disabled?: boolean;
         onEnter?: () => void;
     }
-    let { value = $bindable(""), class: className, placeholder, iconName, max, disabled = false, onEnter = () => {} }: Props = $props();
+    let {
+        value = $bindable(""),
+        class: className,
+        placeholder,
+        iconName = $bindable(""),
+        max,
+        disabled = false,
+        onEnter = () => {},
+    }: Props = $props();
 
     let inputFocus: boolean = $state(false);
     let ref: HTMLInputElement | null = $state(null);
@@ -23,13 +31,13 @@
 >
     {#if iconName}
         {#if !value}
-            <span in:fade={{ duration: 100 }} class="h-4 w-auto">
+            <span in:fade={{ duration: 100 }} class="h-5 w-auto min-w-5">
                 <img src="/icons/{iconName}.webp" alt="{iconName} Icon" class="size-full" />
             </span>
         {:else}
             <button
                 in:fade={{ duration: 100 }}
-                class="h-4 w-auto cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                class="h-5 w-auto min-w-5 cursor-pointer transition-opacity duration-200 hover:opacity-80"
                 onclick={() => {
                     value = "";
                     ref?.focus();

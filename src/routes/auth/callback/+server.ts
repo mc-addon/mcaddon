@@ -1,8 +1,8 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, JWT_SECRET } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import { addUser, fetchUser } from "$lib/db/funcs";
-import { signData } from "$lib/discord/jwt";
 import { getUserData } from "$lib/discord/user";
+import { signData } from "$lib/utils/jwt";
 import { error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
@@ -58,9 +58,27 @@ export const GET: RequestHandler = async ({ locals, fetch, url, cookies }) => {
                     secure: true,
                 });
 
+                const mc = cookies.get("mc");
                 const dbUser = await fetchUser(locals.db, userData.id);
                 if (!dbUser) {
                     await addUser(locals.db, userData.id);
+                } else if (dbUser.minecraft && !mc) {
+                    await fetch("/api/minecraft", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            action: "set",
+                            type: dbUser.minecraft?.type,
+                            username: dbUser.minecraft?.username,
+                        }),
+                    }).then(async (resp) => {
+                        const data = await resp.json();
+                        if (!data.success) {
+                            throw new Error(data.error || "Failed to set Minecraft name");
+                        }
+                    });
                 }
 
                 return new Response(

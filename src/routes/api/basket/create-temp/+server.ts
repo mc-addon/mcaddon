@@ -12,12 +12,12 @@ export const POST = async ({ locals, url }) => {
         // Fetch user data from database to get minecraft name
         const userData = await fetchUser(locals.db, user.id);
 
-        if (!userData?.minecraftName) {
+        if (!userData?.minecraft?.username) {
             return json({ error: "Minecraft name not set. Please set your Minecraft name in your profile." }, { status: 400 });
         }
 
         // Create a temporary basket for single-item purchases
-        const basket: Basket = await locals.tebex.createMinecraftBasket(userData.minecraftName, url.origin, url.origin);
+        const basket: Basket = await locals.tebex.createMinecraftBasket(userData.minecraft.username, url.origin, url.origin);
         return json(basket, { status: 200 });
     } catch (error: any) {
         const data = error.response;

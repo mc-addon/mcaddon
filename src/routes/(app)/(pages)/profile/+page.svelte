@@ -1,16 +1,29 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import Button from "$lib/components/ui/Button.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import PixelatedImage from "$lib/components/ui/PixelatedImage.svelte";
     import Popup from "$lib/components/ui/Popup.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { getUserAvatar } from "$lib/discord/user";
+    import { toggleLinkMC } from "$lib/minecraft/browser";
     import { toast } from "svelte-sonner";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let input: string = $state(data.userData?.minecraftName || "");
+
+    let loading: boolean = $state(false);
+    async function logout() {
+        loading = true;
+        try {
+            goto("/");
+            await fetch("/auth/logout");
+            invalidateAll();
+        } catch {
+            return;
+        }
+        loading = false;
+    }
 
     // Admin settings state
     let javaServerIP: string = $state(data.settings?.minecraftServer?.java?.ip || "");
@@ -27,35 +40,6 @@
         bedrockServerPort = String(data.settings?.minecraftServer?.bedrock?.port || 19132);
         discordInvite = data.settings?.discordServer || "";
     });
-
-    async function setMCName(name: string, status: "set" | "unset" = "set") {
-        const promise = fetch("/api/minecraft", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name, status }),
-        }).then(async (response) => {
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || "An error occurred while setting your Minecraft name.");
-            }
-
-            if (status === "unset") {
-                input = ""; // Clear input if name is unset
-            }
-
-            invalidateAll();
-            return result;
-        });
-
-        toast.promise(promise, {
-            loading: status === "set" ? "Setting Minecraft Name..." : "Unsetting Minecraft Name...",
-            success: status === "set" ? "Minecraft Name set successfully!" : "Minecraft Name unset!",
-            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
-        });
-    }
 
     async function updateServerSettings() {
         if (!javaServerIP.trim()) {
@@ -280,6 +264,7 @@
                         </div>
                     </div>
                 </div>
+                <Button iconName="error" {loading} onclick={logout}>Logout</Button>
             </div>
         </div>
 
@@ -287,61 +272,37 @@
         <div class="order-2 md:order-1 md:h-full md:overflow-y-auto">
             <div class="flex flex-col gap-5">
                 <div class="flex flex-col gap-2">
-                    <h2 class="font-minecrafter text-2xl">Minecraft Profile</h2>
+                    <h2 class="font-minecrafter text-2xl">Linked Minecraft Account</h2>
                     <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
                         <div class="flex flex-col gap-2 text-left">
                             <div class="flex items-center gap-2">
                                 <img src="/icons/grass_block.webp" alt="Grass Block" class="h-6" />
                                 <div>
                                     <p class="text-xs text-neutral-400">Player Name</p>
-                                    <p class="font-bold text-yellow-400">{data.userData?.minecraftName || "Not set"}</p>
+                                    <p class="font-bold text-yellow-400">{data.userData?.minecraft?.username || "Not Set"}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <img src="/icons/info.webp" alt="Info" class="h-6" />
                                 <div>
-                                    <p class="text-xs text-neutral-400">Player ID</p>
-                                    <p class="font-bold text-yellow-400">{data.userData?.minecraftID || "Not set"}</p>
+                                    <p class="text-xs text-neutral-400">Account Type</p>
+                                    <p class="font-bold text-yellow-400">
+                                        {data.userData?.minecraft?.type
+                                            ? data.userData.minecraft.type.charAt(0).toUpperCase() + data.userData.minecraft.type.slice(1)
+                                            : "None"}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <Popup title="Minecraft Name">
-                        {#snippet trigger()}
-                            <Button>{data.userData?.minecraftName ? "Change" : "Set"} Minecraft Name</Button>
-                        {/snippet}
-                        <div class="flex w-full flex-col gap-2">
-                            <Input
-                                bind:value={input}
-                                placeholder="Enter your Minecraft name"
-                                onEnter={() => {
-                                    if (input.trim()) {
-                                        setMCName(input.trim());
-                                    } else {
-                                        toast.error("Minecraft name cannot be empty.");
-                                    }
-                                }}
-                            />
-                            <Button
-                                onclick={() => {
-                                    if (input.trim()) {
-                                        setMCName(input.trim());
-                                    } else {
-                                        toast.error("Minecraft name cannot be empty.");
-                                    }
-                                }}
-                            >
-                                {data.userData?.minecraftName ? "Change" : "Set"} Minecraft Name
-                            </Button>
-                        </div>
-                    </Popup>
-                    <Button
-                        onclick={() => {
-                            setMCName("", "unset");
-                        }}
-                    >
-                        Unset Minecraft Name
-                    </Button>
+                    {#if data.userData?.minecraft}
+                        <Button
+                            onclick={async () => {
+                                await toggleLinkMC(true);
+                                invalidateAll();
+                            }}>Unlink Minecraft Account</Button
+                        >
+                    {/if}
                 </div>
 
                 {#if data.isAdmin}
