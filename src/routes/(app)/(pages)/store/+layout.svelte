@@ -8,6 +8,7 @@
     import { hidePopup, store as popupStore, showPopup } from "$lib/stores/popup";
     import { applyCoupon, getBasket, initiateCheckout, removeCoupon, removeFromBasket, setupTebexCheckout, updateQuantity } from "$lib/tebex";
     import { onMount } from "svelte";
+    import { toast } from "svelte-sonner";
     import { fade, fly } from "svelte/transition";
     import type { ApplyType, Basket, BasketPackage } from "tebex_headless";
     import type { LayoutData } from "./$types";
@@ -19,6 +20,13 @@
     let applyCouponLoading = $state<boolean>(false);
     let couponType = $state<ApplyType>("coupons");
     let inputQtyLoading = $state<Record<number, boolean>>({});
+
+    // Info toast
+    if (!data.user) {
+        toast.info("Please log in to purchase items.", {
+            duration: 10000,
+        });
+    }
 
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {
