@@ -1,6 +1,6 @@
 {
-    "version": 1752213047284,
-    "totalAssets": 35,
+    "version": 1753211331382,
+    "totalAssets": 39,
     "assets": [
         "/favicon.webp",
         "/icons/arrow_down.webp",
@@ -19,6 +19,10 @@
         "/icons/grass_block.webp",
         "/icons/info.webp",
         "/icons/loading.webp",
+        "/icons/mc_bedrock.webp",
+        "/icons/mc_java.webp",
+        "/icons/powered_rail.webp",
+        "/icons/rail.webp",
         "/icons/success.webp",
         "/icons/switch_off.webp",
         "/icons/switch_on.webp",
