@@ -46,12 +46,12 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
     <div
         class="p-base grid size-full grid-cols-1 grid-rows-[auto_1fr] gap-5 overflow-x-hidden border-2
                border-neutral-700 bg-neutral-800
-               md:h-full md:grid-cols-[1fr_300px] md:grid-rows-[auto_1fr]"
+               md:h-full md:grid-cols-[1fr_30%] md:grid-rows-none"
     >
         <!-- Info section - appears first on mobile, second on desktop -->
         <div class="order-1 flex flex-col items-start justify-between gap-5 md:order-2 md:h-full">
             <div class="flex w-full flex-col gap-5">
-                <div class="h-40 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({data.pkg.image});"></div>
+                <div class="aspect-video bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({data.pkg.image});"></div>
                 <div class="flex flex-col text-left">
                     <p>
                         ID: <span class="font-bold text-yellow-400">{data.pkg.id}</span>

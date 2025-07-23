@@ -35,13 +35,15 @@
         {#each Array(2) as _, categoryIndex (categoryIndex)}
             <div class="flex flex-col gap-2">
                 <div class="mx-auto h-8 w-1/4 animate-pulse bg-neutral-700 md:mx-0"></div>
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
                     {#each Array(3) as _, i (i)}
-                        <div class="flex h-100 w-full flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 select-none">
-                            <div class="h-40 w-full animate-pulse bg-neutral-700"></div>
+                        <div
+                            class="flex h-120 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
+                        >
+                            <div class="h-60 w-full animate-pulse bg-neutral-700"></div>
                             <div class="flex flex-1 flex-col gap-2">
                                 <div class="mx-auto h-6 w-3/4 animate-pulse bg-neutral-700"></div>
-                                <div class="flex-1 space-y-2">
+                                <div class="mt-2 flex-1 space-y-2">
                                     <div class="h-4 w-full animate-pulse bg-neutral-700"></div>
                                     <div class="h-4 w-5/6 animate-pulse bg-neutral-700"></div>
                                     <div class="h-4 w-4/5 animate-pulse bg-neutral-700"></div>
@@ -62,14 +64,14 @@
         {#each categories as category (category.id)}
             <div class="flex flex-col gap-2">
                 <h1 class="font-minecrafter text-center text-3xl md:text-left">{category.name}</h1>
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
                     {#each category.packages as pkg (pkg.id)}
                         <a
-                            class="flex h-100 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
+                            class="flex h-120 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
                             href={`/store/${pkg.id}`}
                             onmousedown={() => playSound("click")}
                         >
-                            <div class="h-40 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({pkg.image});"></div>
+                            <div class="h-60 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({pkg.image});"></div>
                             <div class="flex flex-1 flex-col gap-2">
                                 <h2 class="font-minecrafter text-center text-xl leading-tight">{pkg.name}</h2>
                                 <div class="flex-1">
