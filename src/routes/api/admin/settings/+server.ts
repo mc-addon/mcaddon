@@ -10,14 +10,22 @@ function validateSettingValue(key: keyof schema.SettingsMap, value: any): string
             }
             break;
         case "minecraftServer":
-            if (typeof value !== "object" || !value.ip || typeof value.bedrockPort !== "number" || typeof value.javaPort !== "number") {
-                return "Invalid server configuration - must have ip (string), bedrockPort (number), and javaPort (number)";
+            if (
+                typeof value !== "object" ||
+                typeof value.java !== "object" ||
+                typeof value.bedrock !== "object" ||
+                typeof value.java.ip !== "string" ||
+                typeof value.java.port !== "number" ||
+                typeof value.bedrock.ip !== "string" ||
+                typeof value.bedrock.port !== "number"
+            ) {
+                return "Invalid server configuration: must have java and bedrock objects with ip (string) and port (number)";
             }
-            if (value.bedrockPort < 1 || value.bedrockPort > 65535) {
-                return "Bedrock port must be between 1 and 65535";
-            }
-            if (value.javaPort < 1 || value.javaPort > 65535) {
+            if (value.java.port < 1 || value.java.port > 65535) {
                 return "Java port must be between 1 and 65535";
+            }
+            if (value.bedrock.port < 1 || value.bedrock.port > 65535) {
+                return "Bedrock port must be between 1 and 65535";
             }
             break;
         case "discordServer":
