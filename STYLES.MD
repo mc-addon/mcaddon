@@ -10,8 +10,7 @@
     - **Text Colors**
         - **Primary**: `white` - Default global text color
         - **Secondary**: `neutral-200` - Secondary information and labels
-        - **Tertiary**: `neutral-400` - Placeholders, disabled text, and less important content
-        - **Inactive**: `neutral-400` - Loading screen footer text and component shadows (*`<Header />` & `<Button />`*)
+        - **Tertiary**: `neutral-400` - Placeholders, disabled text, less important content, loading screen footer text and component shadows (*`<Header />` & `<Button />`*)
 
     - **Background Colors**
         - **Primary**: `neutral-950` - Global application background
