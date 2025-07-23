@@ -37,21 +37,17 @@
                 <div class="mx-auto h-8 w-1/4 animate-pulse bg-neutral-700 md:mx-0"></div>
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
                     {#each Array(3) as _, i (i)}
-                        <div class="flex h-100 w-full flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 select-none">
-                            <div class="h-40 w-full animate-pulse bg-neutral-700"></div>
-                            <div class="flex flex-1 flex-col gap-2">
+                        <div class="flex h-90 w-full flex-col justify-between gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 select-none">
+                            <div class="flex w-full flex-col items-center justify-center gap-2">
+                                <div class="h-40 w-full animate-pulse bg-neutral-700"></div>
                                 <div class="mx-auto h-6 w-3/4 animate-pulse bg-neutral-700"></div>
-                                <div class="flex-1 space-y-2">
-                                    <div class="h-4 w-full animate-pulse bg-neutral-700"></div>
-                                    <div class="h-4 w-5/6 animate-pulse bg-neutral-700"></div>
-                                    <div class="h-4 w-4/5 animate-pulse bg-neutral-700"></div>
-                                    <div class="h-4 w-2/3 animate-pulse bg-neutral-700"></div>
-                                </div>
                             </div>
-                            <div class="h-4 w-32 animate-pulse bg-neutral-700"></div>
-                            <div class="flex w-full items-center justify-between gap-2">
-                                <div class="h-12 w-14 animate-pulse bg-neutral-700"></div>
-                                <div class="h-12 w-full animate-pulse bg-neutral-700"></div>
+                            <div class="flex flex-col items-start justify-center gap-2">
+                                <div class="h-4 w-32 animate-pulse bg-neutral-700"></div>
+                                <div class="flex w-full items-center justify-between gap-2">
+                                    <div class="h-12 w-14 animate-pulse bg-neutral-700"></div>
+                                    <div class="h-12 w-full animate-pulse bg-neutral-700"></div>
+                                </div>
                             </div>
                         </div>
                     {/each}
@@ -65,49 +61,48 @@
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
                     {#each category.packages as pkg (pkg.id)}
                         <a
-                            class="flex h-100 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
+                            class="flex h-90 w-full cursor-pointer flex-col justify-between gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
                             href={`/store/${pkg.id}`}
                             onmousedown={() => playSound("click")}
                         >
-                            <div class="h-40 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({pkg.image});"></div>
-                            <div class="flex flex-1 flex-col gap-2">
+                            <div class="flex w-full flex-col items-center justify-center gap-2">
+                                <div
+                                    class="h-40 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat"
+                                    style="background-image: url({pkg.image});"
+                                ></div>
                                 <h2 class="font-minecrafter text-center text-xl leading-tight">{pkg.name}</h2>
-                                <div class="flex-1">
-                                    <p class="line-clamp-4 text-left text-sm leading-relaxed">
-                                        {@html pkg.description.split(" ").slice(0, 20).join(" ") +
-                                            (pkg.description.split(" ").length > 20 ? "..." : "")}
-                                    </p>
-                                </div>
                             </div>
-                            <p class="text-left text-sm">
-                                Price: <span class="font-bold text-yellow-400">{pkg.total_price} {pkg.currency}</span>
-                            </p>
-                            <div class="flex w-full items-center justify-between gap-2">
-                                <Tooltip>
-                                    {#snippet trigger()}
-                                        <Button
-                                            iconName="chest"
-                                            disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user}
-                                            onclick={async (e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                basketCooldownManager.addToBasketWithCooldown(data.basket.ident, pkg.id, pkg.name);
-                                            }}
-                                        />
-                                    {/snippet}
-                                    Add to Basket
-                                </Tooltip>
-                                <Button
-                                    loading={buyNowLoading[pkg.id]}
-                                    disabled={!data.user}
-                                    onclick={async (e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        await handleBuyNow(pkg.id, pkg.name);
-                                    }}
-                                >
-                                    {buyNowLoading[pkg.id] ? "Processing..." : "Buy Now"}
-                                </Button>
+                            <div class="flex flex-col items-start justify-center gap-2">
+                                <p class="text-left text-sm">
+                                    Price: <span class="font-bold text-yellow-400">{pkg.total_price} {pkg.currency}</span>
+                                </p>
+                                <div class="flex w-full items-center justify-between gap-2">
+                                    <Tooltip>
+                                        {#snippet trigger()}
+                                            <Button
+                                                iconName="chest"
+                                                disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user}
+                                                onclick={async (e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    basketCooldownManager.addToBasketWithCooldown(data.basket.ident, pkg.id, pkg.name);
+                                                }}
+                                            />
+                                        {/snippet}
+                                        Add to Basket
+                                    </Tooltip>
+                                    <Button
+                                        loading={buyNowLoading[pkg.id]}
+                                        disabled={!data.user}
+                                        onclick={async (e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            await handleBuyNow(pkg.id, pkg.name);
+                                        }}
+                                    >
+                                        {buyNowLoading[pkg.id] ? "Processing..." : "Buy Now"}
+                                    </Button>
+                                </div>
                             </div>
                         </a>
                     {/each}

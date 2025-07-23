@@ -109,6 +109,8 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
 
         <!-- Description section - appears second on mobile, first on desktop -->
         <div class="order-2 md:order-1 md:h-full md:overflow-hidden">
+            <h2 class="font-minecrafter text-left text-2xl leading-tight md:text-4xl">{data.pkg.name}</h2>
+            <br />
             <p class="h-full overflow-y-auto text-left text-sm leading-relaxed md:max-h-full">
                 {@html data.pkg.description}
             </p>
