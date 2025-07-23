@@ -235,7 +235,7 @@ Bedrock Server: {servers[1].ip}:{servers[1].port}
                 <!-- Server Header -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <img src="/icons/{server.name === 'Java Edition' ? 'creeper_head' : 'bedrock'}.webp" alt="Server Icon" class="h-8" />
+                        <img src="/icons/{server.name === 'Java Edition' ? 'mc_java' : 'mc_bedrock'}.webp" alt="Server Icon" class="h-8" />
                         <h2 class="font-minecrafter text-xl">{server.name}</h2>
                     </div>
                     <div class="flex items-center gap-2 {getStatusColor(server.status)}">

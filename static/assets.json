@@ -1,16 +1,14 @@
 {
-    "version": 1753211331382,
-    "totalAssets": 39,
+    "version": 1753250401024,
+    "totalAssets": 37,
     "assets": [
         "/favicon.webp",
         "/icons/arrow_down.webp",
         "/icons/arrow_left.webp",
         "/icons/arrow_right.webp",
         "/icons/arrow_up.webp",
-        "/icons/bedrock.webp",
         "/icons/chest.webp",
         "/icons/cmd_block.webp",
-        "/icons/creeper_head.webp",
         "/icons/cupon.webp",
         "/icons/discord.webp",
         "/icons/error.webp",

@@ -314,7 +314,7 @@
                             <h3 class="font-minecrafter mb-2 text-lg">Minecraft Server</h3>
                             <div class="flex flex-col gap-2 text-left">
                                 <div class="flex items-center gap-2">
-                                    <img src="/icons/creeper_head.webp" alt="Java" class="h-6" />
+                                    <img src="/icons/mc_java.webp" alt="Java" class="h-6" />
                                     <div>
                                         <p class="text-xs text-neutral-400">Java Edition</p>
                                         <p class="font-bold text-yellow-400">
@@ -325,7 +325,7 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <img src="/icons/bedrock.webp" alt="Bedrock" class="h-6" />
+                                    <img src="/icons/mc_bedrock.webp" alt="Bedrock" class="h-6" />
                                     <div>
                                         <p class="text-xs text-neutral-400">Bedrock Edition</p>
                                         <p class="font-bold text-yellow-400">
@@ -344,13 +344,13 @@
                             {/snippet}
                             <div class="flex w-full flex-col gap-2">
                                 <div class="flex items-center justify-start gap-2">
-                                    <img src="/icons/creeper_head.webp" alt="Java" class="h-6" />
+                                    <img src="/icons/mc_java.webp" alt="Java" class="h-6" />
                                     <p class="text-xs text-neutral-200">Java Edition</p>
                                 </div>
                                 <Input bind:value={javaServerIP} placeholder="Enter Java server IP (e.g., play.example.com)" />
                                 <Input bind:value={javaServerPort} placeholder="Enter Java port (default: 25565)" />
                                 <div class="flex items-center justify-start gap-2">
-                                    <img src="/icons/bedrock.webp" alt="Bedrock" class="h-6" />
+                                    <img src="/icons/mc_bedrock.webp" alt="Bedrock" class="h-6" />
                                     <p class="text-xs text-neutral-200">Bedrock Edition</p>
                                 </div>
                                 <Input bind:value={bedrockServerIP} placeholder="Enter Bedrock server IP (e.g., play.example.com)" />
