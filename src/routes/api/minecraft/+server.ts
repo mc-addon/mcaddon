@@ -1,5 +1,7 @@
-import { JWT_SECRET } from "$env/static/private";
+import { DISCORD_BOT_TOKEN, JWT_SECRET } from "$env/static/private";
+import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import { userTable } from "$lib/db/schema.js";
+import { changeNickname, resetNickname } from "$lib/discord/user.js";
 import type { MinecraftUserInfo } from "$lib/minecraft/types";
 import { getUserInfo } from "$lib/minecraft/user.js";
 import { signData } from "$lib/utils/jwt.js";
@@ -29,7 +31,7 @@ async function unsetMinecraftAccount(cookies: Cookies) {
     return json({ success: true }, { status: 200 });
 }
 
-async function linkMinecraftAccount(locals: App.Locals, action: "link" | "unlink") {
+async function linkMinecraftAccount(locals: App.Locals, action: "link" | "unlink", fetch: typeof globalThis.fetch) {
     const user = locals.user;
     if (!user) {
         return json({ error: "Unauthorized" }, { status: 401 });
@@ -39,19 +41,25 @@ async function linkMinecraftAccount(locals: App.Locals, action: "link" | "unlink
 
     if (action === "unlink") {
         await locals.db.update(userTable).set({ minecraft: null }).where(eq(userTable.userID, user.id));
+        await resetNickname(PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, locals.db, user.id, fetch);
         return json({ success: true });
     } else if (action === "link") {
         if (!mc) {
             return json({ error: "No Minecraft account set" }, { status: 400 });
         }
         await locals.db.update(userTable).set({ minecraft: mc }).where(eq(userTable.userID, user.id));
-        return json({ success: true });
+        const resp = await changeNickname(PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, locals.db, user.id, `${user.global_name} [${mc.username}]`, fetch);
+        if (resp?.success) {
+            return json({ success: true });
+        } else {
+            return json({ error: resp?.message }, { status: 400 });
+        }
     } else {
         return json({ error: "Invalid action" }, { status: 400 });
     }
 }
 
-export async function POST({ locals, request, cookies }) {
+export async function POST({ locals, request, cookies, fetch }) {
     const { action, type, username } = await request.json();
 
     if (!action || !["link", "unlink", "set", "unset"].includes(action)) {
@@ -66,6 +74,6 @@ export async function POST({ locals, request, cookies }) {
     } else if (action === "unset") {
         return await unsetMinecraftAccount(cookies);
     } else if (action === "unlink" || action === "link") {
-        return await linkMinecraftAccount(locals, action);
+        return await linkMinecraftAccount(locals, action, fetch);
     }
 }

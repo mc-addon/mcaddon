@@ -73,9 +73,10 @@ export async function buyNow(pkgID: number, pkgName: string): Promise<void> {
 
         // Immediately initiate checkout
         await initiateCheckout();
-    } catch (error) {
+    } catch (err) {
+        const error = err instanceof Error ? err.message : String(err);
         console.error("Buy now error:", error);
-        toast.error("Failed to complete purchase. Please try again.");
+        toast.error(error || "Failed to complete purchase. Please try again.");
     }
 }
 

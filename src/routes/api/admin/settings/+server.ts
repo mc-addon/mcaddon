@@ -1,8 +1,10 @@
+import { DISCORD_BOT_TOKEN } from "$env/static/private";
+import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import * as schema from "$lib/db/schema";
-import { isAdmin } from "$lib/discord/user";
+import { getGuildData, isAdmin } from "$lib/discord/user";
 import { json } from "@sveltejs/kit";
 
-function validateSettingValue(key: keyof schema.SettingsMap, value: any): string | null {
+async function validateSettingValue(key: keyof schema.SettingsMap, value: any): Promise<string | null> {
     switch (key) {
         case "adminIDs":
             if (!Array.isArray(value) || !value.every((id) => typeof id === "string")) {
@@ -28,9 +30,18 @@ function validateSettingValue(key: keyof schema.SettingsMap, value: any): string
                 return "Bedrock port must be between 1 and 65535";
             }
             break;
-        case "discordServer":
-            if (typeof value !== "string") {
-                return "Discord server must be a string";
+        case "guild":
+            if (typeof value !== "object" || typeof value.id !== "string" || typeof value.invite !== "string") {
+                return "Guild must be an object with id (string) and invite (string)";
+            }
+            if (!value.id || !value.invite) {
+                return "Guild id and invite cannot be empty";
+            }
+            if (value.id) {
+                const guildData = await getGuildData(PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, value.id);
+                if ("error" in guildData) {
+                    return "Invalid Discord Guild ID";
+                }
             }
             break;
         default:
@@ -42,7 +53,7 @@ function validateSettingValue(key: keyof schema.SettingsMap, value: any): string
 // Get valid keys from SettingsMap interface
 // NOTE: When adding new settings to SettingsMap, update this array and add validation in validateSettingValue
 function getValidSettingKeys(): (keyof schema.SettingsMap)[] {
-    return ["adminIDs", "minecraftServer", "discordServer"];
+    return ["adminIDs", "minecraftServer", "guild"];
 }
 
 function isValidSettingKey(key: string): key is keyof schema.SettingsMap {
@@ -73,7 +84,7 @@ export const POST = async ({ locals, request }) => {
     }
 
     // Validate the value based on the key type from SettingsMap
-    const validationError = validateSettingValue(key, value);
+    const validationError = await validateSettingValue(key, value);
     if (validationError) {
         return json({ error: validationError }, { status: 400 });
     }

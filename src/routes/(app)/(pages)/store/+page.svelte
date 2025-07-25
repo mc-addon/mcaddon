@@ -88,7 +88,7 @@
                                     {#snippet trigger()}
                                         <Button
                                             iconName="chest"
-                                            disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user}
+                                            disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user || !data.inGuild}
                                             onclick={async (e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -100,7 +100,7 @@
                                 </Tooltip>
                                 <Button
                                     loading={buyNowLoading[pkg.id]}
-                                    disabled={!data.user}
+                                    disabled={!data.user || !data.inGuild}
                                     onclick={async (e) => {
                                         e.preventDefault();
                                         e.stopPropagation();

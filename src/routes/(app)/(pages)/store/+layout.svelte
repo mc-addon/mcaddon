@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from "$app/navigation";
     import Button from "$lib/components/ui/Button.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import Popup from "$lib/components/ui/Popup.svelte";
@@ -21,13 +22,6 @@
     let couponType = $state<ApplyType>("coupons");
     let inputQtyLoading = $state<Record<number, boolean>>({});
 
-    // Info toast
-    if (!data.user) {
-        toast.info("Please log in to purchase items.", {
-            duration: 10000,
-        });
-    }
-
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {
         if (newBasket) {
@@ -43,6 +37,19 @@
 
         // Setup Tebex checkout
         setupTebexCheckout(data.basket.ident);
+    });
+
+    afterNavigate(() => {
+        // Info toast
+        if (!data.user) {
+            toast.info("Please log in to purchase items.", {
+                duration: 10000,
+            });
+        } else if (!data.inGuild) {
+            toast.info("You must be a member of the Discord Server to purchase items.", {
+                duration: 10000,
+            });
+        }
     });
 
     const couponTypeOptions = [

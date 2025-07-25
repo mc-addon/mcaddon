@@ -30,7 +30,8 @@
     let bedrockServerIP: string = $state(data.settings?.minecraftServer?.bedrock?.ip || "");
     let javaServerPort: string = $state(String(data.settings?.minecraftServer?.java?.port || 25565));
     let bedrockServerPort: string = $state(String(data.settings?.minecraftServer?.bedrock?.port || 19132));
-    let discordInvite: string = $state(data.settings?.discordServer || "");
+    let discordInvite: string = $state(data.settings?.guild?.invite || "");
+    let discordID: string = $state(data.settings?.guild?.id || "");
     let adminUserInput: string = $state("");
 
     $effect(() => {
@@ -38,7 +39,8 @@
         bedrockServerIP = data.settings?.minecraftServer?.bedrock?.ip || "";
         javaServerPort = String(data.settings?.minecraftServer?.java?.port || 25565);
         bedrockServerPort = String(data.settings?.minecraftServer?.bedrock?.port || 19132);
-        discordInvite = data.settings?.discordServer || "";
+        discordInvite = data.settings?.guild?.invite || "";
+        discordID = data.settings?.guild?.id || "";
     });
 
     async function updateServerSettings() {
@@ -111,8 +113,8 @@
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                key: "discordServer",
-                value: discordInvite.trim(),
+                key: "guild",
+                value: { invite: discordInvite.trim(), id: discordID.trim() },
             }),
         }).then(async (response) => {
             const result = await response.json();
@@ -367,7 +369,14 @@
                                     <img src="/icons/discord.webp" alt="Discord" class="h-6" />
                                     <div>
                                         <p class="text-xs text-neutral-400">Discord Invite</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.discordServer || "Not set"}</p>
+                                        <p class="font-bold text-yellow-400">{data.settings?.guild?.invite || "Not set"}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="/icons/info.webp" alt="Discord" class="h-6" />
+                                    <div>
+                                        <p class="text-xs text-neutral-400">Discord Guild ID</p>
+                                        <p class="font-bold text-yellow-400">{data.settings?.guild?.id || "Not set"}</p>
                                     </div>
                                 </div>
                             </div>
@@ -379,6 +388,7 @@
                             {/snippet}
                             <div class="flex w-full flex-col gap-2">
                                 <Input bind:value={discordInvite} placeholder="Enter Discord invite URL" onEnter={updateDiscordSettings} />
+                                <Input bind:value={discordID} placeholder="Enter Discord Guild ID" onEnter={updateDiscordSettings} />
                                 <Button onclick={updateDiscordSettings}>Update Discord Settings</Button>
                             </div>
                         </Popup>

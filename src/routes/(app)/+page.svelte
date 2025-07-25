@@ -22,14 +22,8 @@
             loading = true;
             try {
                 await setMC(input.trim(), isJava ? "java" : "bedrock");
-                invalidateAll();
-            } catch (e) {
-                if (e instanceof Error) {
-                    toast.error(e.message);
-                } else {
-                    toast.error(String(e));
-                }
             } finally {
+                invalidateAll();
                 input = "";
                 loading = false;
             }
@@ -80,30 +74,25 @@
                         <Toggle bind:status={isJava} />
                         <p>Java</p>
                     </div>
-                    <Button disabled={loading} size="sm" onclick={setMinecraftAcc}>Set Minecraft Account</Button>
+                    <Button {loading} size="sm" onclick={setMinecraftAcc}>Set Minecraft Account</Button>
                     {#if data.mc}
                         <Button
-                            disabled={loading}
+                            {loading}
                             size="sm"
                             onclick={async () => {
                                 loading = true;
                                 try {
                                     await unsetMC();
+                                } finally {
                                     invalidateAll();
-                                } catch (e) {
-                                    if (e instanceof Error) {
-                                        toast.error(e.message);
-                                    } else {
-                                        toast.error(String(e));
-                                    }
+                                    loading = false;
                                 }
-                                loading = false;
                             }}>Unset Minecraft Account</Button
                         >
                     {/if}
                     {#if data.user && data.userData?.minecraft?.username && data.userData?.minecraft?.username != data.mc?.username}
                         <Button
-                            disabled={loading}
+                            {loading}
                             size="sm"
                             onclick={async () => {
                                 if (!data.userData?.minecraft?.username) {
@@ -113,14 +102,8 @@
                                 loading = true;
                                 try {
                                     await setMC(data.userData?.minecraft.username, data.userData?.minecraft.type);
-                                    invalidateAll();
-                                } catch (e) {
-                                    if (e instanceof Error) {
-                                        toast.error(e.message);
-                                    } else {
-                                        toast.error(String(e));
-                                    }
                                 } finally {
+                                    invalidateAll();
                                     loading = false;
                                 }
                             }}>Use linked Minecraft Account</Button
@@ -137,21 +120,16 @@
                                 ? "powered_rail"
                                 : "rail"}
                             size="sm"
+                            loading={loadingLink}
                             onclick={async () => {
                                 loadingLink = true;
                                 try {
                                     await toggleLinkMC(
                                         data.userData?.minecraft?.username == data.mc?.username && data.userData?.minecraft?.type == data.mc?.type,
                                     );
-                                } catch (e) {
-                                    if (e instanceof Error) {
-                                        toast.error(e.message);
-                                    } else {
-                                        toast.error(String(e));
-                                    }
                                 } finally {
-                                    loadingLink = false;
                                     invalidateAll();
+                                    loadingLink = false;
                                 }
                             }}
                         />
