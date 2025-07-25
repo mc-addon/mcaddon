@@ -48,7 +48,14 @@ async function linkMinecraftAccount(locals: App.Locals, action: "link" | "unlink
             return json({ error: "No Minecraft account set" }, { status: 400 });
         }
         await locals.db.update(userTable).set({ minecraft: mc }).where(eq(userTable.userID, user.id));
-        const resp = await changeNickname(PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, locals.db, user.id, `${user.global_name} [${mc.username}]`, fetch);
+        const resp = await changeNickname(
+            PUBLIC_DISCORD_URL,
+            DISCORD_BOT_TOKEN,
+            locals.db,
+            user.id,
+            `${user.global_name || user.username} [${mc.username}]`,
+            fetch,
+        );
         if (resp?.success) {
             return json({ success: true });
         } else {
