@@ -28,7 +28,6 @@
     // Admin settings state
     let javaServerIP: string = $state(data.settings?.minecraftServer?.java?.ip || "");
     let bedrockServerIP: string = $state(data.settings?.minecraftServer?.bedrock?.ip || "");
-    let javaServerPort: string = $state(String(data.settings?.minecraftServer?.java?.port || 25565));
     let bedrockServerPort: string = $state(String(data.settings?.minecraftServer?.bedrock?.port || 19132));
     let discordInvite: string = $state(data.settings?.guild?.invite || "");
     let discordID: string = $state(data.settings?.guild?.id || "");
@@ -37,7 +36,6 @@
     $effect(() => {
         javaServerIP = data.settings?.minecraftServer?.java?.ip || "";
         bedrockServerIP = data.settings?.minecraftServer?.bedrock?.ip || "";
-        javaServerPort = String(data.settings?.minecraftServer?.java?.port || 25565);
         bedrockServerPort = String(data.settings?.minecraftServer?.bedrock?.port || 19132);
         discordInvite = data.settings?.guild?.invite || "";
         discordID = data.settings?.guild?.id || "";
@@ -59,12 +57,6 @@
             return;
         }
 
-        const javaPort = Number(javaServerPort);
-        if (isNaN(javaPort) || javaPort < 1 || javaPort > 65535) {
-            toast.error("Java port must be a valid number between 1 and 65535.");
-            return;
-        }
-
         const promise = fetch("/api/admin/settings", {
             method: "POST",
             headers: {
@@ -75,7 +67,6 @@
                 value: {
                     java: {
                         ip: javaServerIP.trim(),
-                        port: javaPort,
                     },
                     bedrock: {
                         ip: bedrockServerIP.trim(),
@@ -321,8 +312,6 @@
                                         <p class="text-xs text-neutral-400">Java Edition</p>
                                         <p class="font-bold text-yellow-400">
                                             {data.settings?.minecraftServer?.java?.ip || "Not set"}
-                                            :
-                                            {data.settings?.minecraftServer?.java?.port || "Not set"}
                                         </p>
                                     </div>
                                 </div>
@@ -350,7 +339,6 @@
                                     <p class="text-xs text-neutral-200">Java Edition</p>
                                 </div>
                                 <Input bind:value={javaServerIP} placeholder="Enter Java server IP (e.g., play.example.com)" />
-                                <Input bind:value={javaServerPort} placeholder="Enter Java port (default: 25565)" />
                                 <div class="flex items-center justify-start gap-2">
                                     <img src="/icons/mc_bedrock.webp" alt="Bedrock" class="h-6" />
                                     <p class="text-xs text-neutral-200">Bedrock Edition</p>

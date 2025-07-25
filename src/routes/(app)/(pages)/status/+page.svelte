@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { PUBLIC_MCSTATUS_BEDROCK_API, PUBLIC_MCSTATUS_JAVA_API } from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
@@ -33,7 +34,7 @@
         responseTime: number | null;
         data: ServerData | null;
         ip: string;
-        port: number;
+        port?: number;
         available: boolean;
     }
 
@@ -93,7 +94,7 @@
 
         // Check if the server IP and port are set (differentiated for java/bedrock)
         const ip = isBedrock ? data.server?.bedrock.ip : data.server?.java.ip;
-        const port = isBedrock ? data.server?.bedrock.port : data.server?.java.port;
+        const port = isBedrock ? data.server?.bedrock.port : true;
         if (!ip || !port) {
             statusSetter("offline");
             timeSetter(null);
@@ -108,7 +109,7 @@
             const controller = new AbortController();
             setTimeout(() => controller.abort(), 15000);
 
-            const url = isBedrock ? `https://api.mcsrvstat.us/bedrock/3/${ip}:${port}` : `https://api.mcsrvstat.us/3/${ip}:${port}`;
+            const url = isBedrock ? `${PUBLIC_MCSTATUS_BEDROCK_API}/${ip}:${port}` : `${PUBLIC_MCSTATUS_JAVA_API}/${ip}`;
 
             const response = await fetch(url, { signal: controller.signal });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -204,8 +205,7 @@
             responseTime: javaResponseTime,
             data: javaServerData,
             ip: data.server?.java.ip || "",
-            port: data.server?.java.port || 25565, // Default port if settings are null
-            available: !!data.server?.java.ip && !!data.server?.java.port,
+            available: !!data.server?.java.ip,
         },
         {
             name: "Bedrock Edition",
@@ -222,7 +222,7 @@
 <Seo
     title="Server Status"
     description="
-Java Server: {servers[0].ip}:{servers[0].port}
+Java Server: {servers[0].ip}
 Bedrock Server: {servers[1].ip}:{servers[1].port}
 "
 />
@@ -253,7 +253,7 @@ Bedrock Server: {servers[1].ip}:{servers[1].port}
                         <button
                             class="flex cursor-copy justify-between"
                             onclick={() => {
-                                const address = `${server.ip}:${server.port}`;
+                                const address = `${server.ip}${server.port ? `:${server.port}` : ""}`;
                                 navigator.clipboard
                                     .writeText(address)
                                     .then(() => {
@@ -265,7 +265,7 @@ Bedrock Server: {servers[1].ip}:{servers[1].port}
                             }}
                         >
                             <span class="text-neutral-200">Address:</span>
-                            <span class="font-mono text-yellow-400">{server.ip}:{server.port}</span>
+                            <span class="font-mono text-yellow-400">{server.ip}{server.port ? `:${server.port}` : ""}</span>
                         </button>
 
                         {#if server.data}

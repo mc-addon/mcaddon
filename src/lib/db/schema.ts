@@ -16,7 +16,6 @@ export interface SettingsMap {
     minecraftServer: {
         java: {
             ip: string;
-            port: number;
         };
         bedrock: {
             ip: string;

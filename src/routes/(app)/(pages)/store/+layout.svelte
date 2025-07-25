@@ -42,7 +42,7 @@
     afterNavigate(() => {
         // Info toast
         if (!data.user) {
-            toast.info("Please log in to purchase items.", {
+            toast.info("Please log in via Discord to purchase items.", {
                 duration: 10000,
             });
         } else if (!data.inGuild) {
