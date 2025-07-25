@@ -14,6 +14,7 @@
 
     let { data }: { data: PageData } = $props();
     let input = $state<string>(data.mc ? data.mc.username : "");
+    let inputImage = $derived(input ? { src: `https://cravatar.eu/avatar/${input}/600`, alt: input } : { src: "", alt: "" });
     let isJava = $derived(!data.mc || data.mc.type === "java");
     let loading = $state<boolean>(false);
 
@@ -58,7 +59,10 @@
         <div class="relative flex w-full flex-col items-center justify-center gap-2 md:flex-row md:gap-5">
             <Popup title="Minecraft Account">
                 {#snippet trigger()}
-                    <Button iconName={data.mc?.type ? `mc_${data.mc.type}` : "grass_block"}>
+                    <Button
+                        iconName={data.mc?.type ? "" : "grass_block"}
+                        img={data.mc ? { src: `https://cravatar.eu/avatar/${data.mc?.username}/600`, alt: data.mc?.username } : { src: "", alt: "" }}
+                    >
                         {data.mc ? data.mc.username.slice(0, 8) + "..." : "Minecraft"}
                     </Button>
                 {/snippet}
@@ -67,6 +71,8 @@
                         bind:value={input}
                         disabled={loading}
                         placeholder="Minecraft {isJava ? 'username' : 'gamertag'}"
+                        iconName="grass_block"
+                        bind:img={inputImage}
                         onEnter={setMinecraftAcc}
                     />
                     <div class="flex w-full items-center justify-center gap-2">

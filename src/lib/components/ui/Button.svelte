@@ -140,9 +140,7 @@
     data-sveltekit-preload-data="hover"
 >
     {@render children?.()}
-    {#if iconName}
-        <img src="/icons/{iconName}.webp" alt={iconName} class={cn("inline-block p-1.5 align-middle", iconClasses, iconClass)} />
-    {:else if img?.src}
+    {#if img?.src}
         <PixelatedImage
             src={img.src}
             alt={img.alt || ""}
@@ -151,5 +149,7 @@
             height={config?.iconSize === "h-7" ? 28 : config?.iconSize === "h-10" ? 40 : config?.iconSize === "h-14" ? 56 : 76}
             pixelSize={2}
         />
+    {:else if iconName}
+        <img src="/icons/{iconName}.webp" alt={iconName} class={cn("inline-block p-1.5 align-middle", iconClasses, iconClass)} />
     {/if}
 </svelte:element>

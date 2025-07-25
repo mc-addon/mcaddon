@@ -1,12 +1,14 @@
 <script lang="ts">
     import { cn } from "$lib/utils/cn";
     import { fade } from "svelte/transition";
+    import PixelatedImage from "./PixelatedImage.svelte";
 
     interface Props {
         value: any;
         class?: string;
         placeholder?: string;
         iconName?: string;
+        img?: { src: string; alt?: string };
         max?: number;
         disabled?: boolean;
         onEnter?: () => void;
@@ -16,6 +18,7 @@
         class: className,
         placeholder,
         iconName = $bindable(""),
+        img = $bindable({ src: "", alt: "" }),
         max,
         disabled = false,
         onEnter = () => {},
@@ -29,7 +32,9 @@
     class={cn("flex h-10 items-center justify-center gap-5 border-2 border-neutral-700 bg-neutral-800 p-2 transition-colors duration-200", className)}
     class:!border-neutral-500={inputFocus}
 >
-    {#if iconName}
+    {#if img.src}
+        <PixelatedImage bind:src={img.src} bind:alt={img.alt} class="size-5" />
+    {:else if iconName}
         {#if !value}
             <span in:fade={{ duration: 100 }} class="h-5 w-auto min-w-5">
                 <img src="/icons/{iconName}.webp" alt="{iconName} Icon" class="size-full" />

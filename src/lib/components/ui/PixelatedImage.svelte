@@ -10,7 +10,7 @@
         pixelSize?: number;
     }
 
-    let { src, alt = "", class: className = "", width = 64, height = 64, pixelSize = 4, ...restProps }: Props = $props();
+    let { src = $bindable(""), alt = $bindable(""), class: className = "", width = 64, height = 64, pixelSize = 4, ...restProps }: Props = $props();
 
     let canvas: HTMLCanvasElement;
     let ctx: CanvasRenderingContext2D;
@@ -69,7 +69,11 @@
             pixelateImage();
         };
 
-        img.src = src;
+        $effect(() => {
+            if (src) {
+                img.src = src;
+            }
+        });
     });
 
     // Re-pixelate when props change
