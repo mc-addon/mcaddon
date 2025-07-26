@@ -280,16 +280,29 @@ export async function initiateCheckout(): Promise<void> {
 
 export function setupTebexCheckout(basketIdent: string) {
     // Import Tebex dynamically to avoid SSR issues
-    import("@tebexio/tebex.js").then(({ default: Tebex }) => {
-        Tebex.checkout.init({
-            ident: basketIdent,
-            closeOnClickOutside: true,
-            closeOnEsc: true,
-            theme: "dark",
-            colors: [
-                { name: "primary", color: "#FACC15" }, // yellow-400
-                { name: "secondary", color: "#0A0A0A" }, // neutral-950
-            ],
+    import("@tebexio/tebex.js")
+        .then(({ default: Tebex }) => {
+            Tebex.checkout.init({
+                ident: basketIdent,
+                closeOnClickOutside: true,
+                closeOnEsc: true,
+                theme: "dark",
+                colors: [
+                    { name: "primary", color: "#FACC15" }, // yellow-400
+                    { name: "secondary", color: "#0A0A0A" }, // neutral-950
+                ],
+            });
+            Tebex.checkout.on("payment:complete", () => {
+                toast.success("Payment completed successfully!");
+                hideAllPopups();
+            });
+            Tebex.checkout.on("payment:error", (error) => {
+                console.error("Payment error:", error);
+                toast.error("An error occurred during payment. Please try again.");
+            });
+        })
+        .catch((error) => {
+            console.error("Failed to setup Tebex checkout:", error);
+            toast.error("Failed to setup checkout. Please try again.");
         });
-    });
 }
