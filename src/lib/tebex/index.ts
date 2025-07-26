@@ -294,7 +294,6 @@ export function setupTebexCheckout(basketIdent: string) {
             });
             Tebex.checkout.on("payment:complete", () => {
                 toast.success("Payment completed successfully!");
-                hideAllPopups();
             });
             Tebex.checkout.on("payment:error", (error) => {
                 console.error("Payment error:", error);
