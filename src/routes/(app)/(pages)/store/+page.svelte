@@ -22,7 +22,7 @@
     async function handleBuyNow(pkgId: number, pkgName: string) {
         buyNowLoading[pkgId] = true;
         try {
-            await buyNow(pkgId, pkgName);
+            await buyNow(pkgId, pkgName, basket.ident);
         } finally {
             buyNowLoading[pkgId] = false;
         }

@@ -60,7 +60,7 @@ export async function createTempBasket(): Promise<Basket> {
 }
 
 // One-click buy function using temporary basket
-export async function buyNow(pkgID: number, pkgName: string): Promise<void> {
+export async function buyNow(pkgID: number, pkgName: string, mainBasketIdent: string): Promise<void> {
     try {
         // Create a temporary basket for this single purchase
         const tempBasket = await createTempBasket();
@@ -73,6 +73,9 @@ export async function buyNow(pkgID: number, pkgName: string): Promise<void> {
 
         // Immediately initiate checkout
         await initiateCheckout();
+
+        // Re-setup the main basket after checkout
+        setupTebexCheckout(mainBasketIdent);
     } catch (err) {
         const error = err instanceof Error ? err.message : String(err);
         console.error("Buy now error:", error);

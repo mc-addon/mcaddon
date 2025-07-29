@@ -26,7 +26,7 @@
     async function handleBuyNow() {
         buyNowLoading = true;
         try {
-            await buyNow(data.pkg.id, data.pkg.name);
+            await buyNow(data.pkg.id, data.pkg.name, basket.ident);
         } finally {
             buyNowLoading = false;
         }
