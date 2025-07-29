@@ -40,7 +40,7 @@
                         <div
                             class="flex h-120 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
                         >
-                            <div class="h-60 w-full animate-pulse bg-neutral-700"></div>
+                            <div class="aspect-video w-full animate-pulse bg-neutral-700"></div>
                             <div class="flex flex-1 flex-col gap-2">
                                 <div class="mx-auto h-6 w-3/4 animate-pulse bg-neutral-700"></div>
                                 <div class="mt-2 flex-1 space-y-2">
@@ -71,7 +71,10 @@
                             href={`/store/${pkg.id}`}
                             onmousedown={() => playSound("click")}
                         >
-                            <div class="h-60 w-full bg-neutral-700 bg-cover bg-center bg-no-repeat" style="background-image: url({pkg.image});"></div>
+                            <div
+                                class="aspect-video w-full bg-neutral-700 bg-cover bg-center bg-no-repeat"
+                                style="background-image: url({pkg.image});"
+                            ></div>
                             <div class="flex flex-1 flex-col gap-2">
                                 <h2 class="font-minecrafter text-center text-xl leading-tight">{pkg.name}</h2>
                                 <div class="flex-1">
