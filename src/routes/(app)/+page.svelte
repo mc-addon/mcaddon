@@ -6,9 +6,8 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import Title from "$lib/components/ui/Title.svelte";
     import Toggle from "$lib/components/ui/Toggle.svelte";
-    import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import UserButton from "$lib/components/UserButton.svelte";
-    import { setMC, toggleLinkMC, unsetMC } from "$lib/minecraft/browser";
+    import { setMC, unsetMC } from "$lib/minecraft/browser";
     import { toast } from "svelte-sonner";
     import type { PageData } from "./$types";
 
@@ -32,9 +31,6 @@
             toast.error("Minecraft name cannot be empty.");
         }
     }
-
-    // Linking
-    let loadingLink = $state<boolean>(false);
 </script>
 
 <Seo />
@@ -96,57 +92,9 @@
                             }}>Unset Minecraft Account</Button
                         >
                     {/if}
-                    {#if data.user && data.userData?.minecraft?.username && data.userData?.minecraft?.username != data.mc?.username}
-                        <Button
-                            {loading}
-                            size="sm"
-                            onclick={async () => {
-                                if (!data.userData?.minecraft?.username) {
-                                    toast.error("You need to link your Minecraft account first.");
-                                    return;
-                                }
-                                loading = true;
-                                try {
-                                    await setMC(data.userData?.minecraft.username, data.userData?.minecraft.type);
-                                } finally {
-                                    invalidateAll();
-                                    loading = false;
-                                }
-                            }}>Use linked Minecraft Account</Button
-                        >
-                    {/if}
                 </div>
             </Popup>
             <UserButton user={data.user} />
-            {#if data.user && data.mc}
-                <Tooltip triggerClass="absolute">
-                    {#snippet trigger()}
-                        <Button
-                            iconName={data.userData?.minecraft?.username == data.mc?.username && data.userData?.minecraft?.type == data.mc?.type
-                                ? "powered_rail"
-                                : "rail"}
-                            size="sm"
-                            loading={loadingLink}
-                            onclick={async () => {
-                                loadingLink = true;
-                                try {
-                                    await toggleLinkMC(
-                                        data.userData?.minecraft?.username == data.mc?.username && data.userData?.minecraft?.type == data.mc?.type,
-                                    );
-                                } finally {
-                                    invalidateAll();
-                                    loadingLink = false;
-                                }
-                            }}
-                        />
-                    {/snippet}
-                    {#if data.userData?.minecraft?.username == data.mc?.username && data.userData?.minecraft?.type == data.mc?.type}
-                        Unlink account
-                    {:else}
-                        Link account
-                    {/if}
-                </Tooltip>
-            {/if}
         </div>
     </div>
 </div>

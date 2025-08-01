@@ -7,7 +7,6 @@
     import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { getUserAvatar } from "$lib/discord/user";
-    import { toggleLinkMC } from "$lib/minecraft/browser";
     import { toast } from "svelte-sonner";
     import type { Package } from "tebex_headless";
     import type { PageData } from "./$types";
@@ -327,40 +326,6 @@
         <!-- Main content section - appears second on mobile, first on desktop -->
         <div class="order-2 md:order-1 md:h-full md:overflow-y-auto">
             <div class="flex flex-col gap-5">
-                <div class="flex flex-col gap-2">
-                    <h2 class="font-minecrafter text-2xl">Linked Minecraft Account</h2>
-                    <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
-                        <div class="flex flex-col gap-2 text-left">
-                            <div class="flex items-center gap-2">
-                                <img src="/icons/grass_block.webp" alt="Grass Block" class="h-6" />
-                                <div>
-                                    <p class="text-xs text-neutral-400">Player Name</p>
-                                    <p class="font-bold text-yellow-400">{data.userData?.minecraft?.username || "Not Set"}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <img src="/icons/info.webp" alt="Info" class="h-6" />
-                                <div>
-                                    <p class="text-xs text-neutral-400">Account Type</p>
-                                    <p class="font-bold text-yellow-400">
-                                        {data.userData?.minecraft?.type
-                                            ? data.userData.minecraft.type.charAt(0).toUpperCase() + data.userData.minecraft.type.slice(1)
-                                            : "None"}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {#if data.userData?.minecraft}
-                        <Button
-                            onclick={async () => {
-                                await toggleLinkMC(true);
-                                invalidateAll();
-                            }}>Unlink Minecraft Account</Button
-                        >
-                    {/if}
-                </div>
-
                 {#if data.isAdmin}
                     <div class="flex flex-col gap-2">
                         <h2 class="font-minecrafter text-2xl">Admin Settings</h2>

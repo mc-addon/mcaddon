@@ -59,32 +59,3 @@ export async function unsetMC() {
     });
     return promise;
 }
-
-export async function toggleLinkMC(unlink: boolean) {
-    const type = unlink ? "unlink" : "link";
-    const promise = fetch("/api/minecraft", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            action: type,
-        }),
-    }).then(async (resp) => {
-        const data = await resp.json();
-        if (!data.success) {
-            throw new Error(data.error || `Failed to ${type} Minecraft account`);
-        }
-    });
-    toast.promise(promise, {
-        loading: `${type.charAt(0).toUpperCase() + type.slice(1)}ing Minecraft account...`,
-        success: `Minecraft account successfully ${type}ed!`,
-        error: (err) => {
-            if (err instanceof Error) {
-                return err.message;
-            }
-            return `Failed to ${type} Minecraft account`;
-        },
-    });
-    return promise;
-}
