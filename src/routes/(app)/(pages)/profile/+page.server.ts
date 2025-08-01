@@ -35,5 +35,6 @@ export const load: PageServerLoad = async ({ locals }) => {
         isAdmin: isAdminUser,
         settings,
         adminsPromises,
+        pkgs: await locals.tebex.getPackages(),
     };
 };

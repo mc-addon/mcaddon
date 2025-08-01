@@ -40,6 +40,12 @@ async function validateSettingValue(key: keyof schema.SettingsMap, value: any): 
                 }
             }
             break;
+        case "specialPkgIDs":
+            console.log(value);
+            if (!Array.isArray(value) || !value.every((id) => typeof id === "number")) {
+                return "Special package IDs must be an array of numbers";
+            }
+            break;
         default:
             return "Unknown setting key";
     }
@@ -49,7 +55,7 @@ async function validateSettingValue(key: keyof schema.SettingsMap, value: any): 
 // Get valid keys from SettingsMap interface
 // NOTE: When adding new settings to SettingsMap, update this array and add validation in validateSettingValue
 function getValidSettingKeys(): (keyof schema.SettingsMap)[] {
-    return ["adminIDs", "minecraftServer", "guild"];
+    return ["adminIDs", "minecraftServer", "guild", "specialPkgIDs"];
 }
 
 function isValidSettingKey(key: string): key is keyof schema.SettingsMap {

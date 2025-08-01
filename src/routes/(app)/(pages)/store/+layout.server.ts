@@ -1,3 +1,4 @@
+import { fetchSettings } from "$lib/db/funcs";
 import { checkIfUserInGuild } from "$lib/discord/user";
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
@@ -11,5 +12,6 @@ export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
 
     const inGuild = user ? await checkIfUserInGuild(fetch) : false;
     const basket = await locals.tebex.createMinecraftBasket(mc.username, url.origin, url.origin);
-    return { basket, user, inGuild };
+    const specialPkgIDs = await fetchSettings(locals.db, "specialPkgIDs");
+    return { basket, user, inGuild, specialPkgIDs };
 };

@@ -1,6 +1,6 @@
 {
-    "version": 1753284546411,
-    "totalAssets": 37,
+    "version": 1754046884149,
+    "totalAssets": 38,
     "assets": [
         "/favicon.webp",
         "/icons/arrow_down.webp",
@@ -35,6 +35,7 @@
         "/scenes/top.webp",
         "/sounds/click.ogg",
         "/textures/button.webp",
+        "/textures/special_card.webp",
         "/titles/mcaddon.webp",
         "/titles/profile.webp",
         "/titles/status.webp",

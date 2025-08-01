@@ -4,10 +4,12 @@
     import Input from "$lib/components/ui/Input.svelte";
     import PixelatedImage from "$lib/components/ui/PixelatedImage.svelte";
     import Popup from "$lib/components/ui/Popup.svelte";
+    import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { getUserAvatar } from "$lib/discord/user";
     import { toggleLinkMC } from "$lib/minecraft/browser";
     import { toast } from "svelte-sonner";
+    import type { Package } from "tebex_headless";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -26,20 +28,15 @@
     }
 
     // Admin settings state
-    let javaServerIP: string = $state(data.settings?.minecraftServer?.java?.ip || "");
-    let bedrockServerIP: string = $state(data.settings?.minecraftServer?.bedrock?.ip || "");
-    let bedrockServerPort: string = $state(String(data.settings?.minecraftServer?.bedrock?.port || 19132));
-    let discordInvite: string = $state(data.settings?.guild?.invite || "");
-    let discordID: string = $state(data.settings?.guild?.id || "");
+    let javaServerIP: string = $derived(data.settings?.minecraftServer?.java?.ip || "");
+    let bedrockServerIP: string = $derived(data.settings?.minecraftServer?.bedrock?.ip || "");
+    let bedrockServerPort: number = $derived(data.settings?.minecraftServer?.bedrock?.port || 19132);
+    let discordInvite: string = $derived(data.settings?.guild?.invite || "");
+    let discordID: string = $derived(data.settings?.guild?.id || "");
+    let specialPkgIDs: number[] = $derived(data.settings?.specialPkgIDs || []);
+    let specialPkgs: Package[] = $derived(data.pkgs?.filter((pkg) => specialPkgIDs.includes(pkg.id)) || []);
     let adminUserInput: string = $state("");
-
-    $effect(() => {
-        javaServerIP = data.settings?.minecraftServer?.java?.ip || "";
-        bedrockServerIP = data.settings?.minecraftServer?.bedrock?.ip || "";
-        bedrockServerPort = String(data.settings?.minecraftServer?.bedrock?.port || 19132);
-        discordInvite = data.settings?.guild?.invite || "";
-        discordID = data.settings?.guild?.id || "";
-    });
+    let selectedPkgID: string = $state(""); // For select popup
 
     async function updateServerSettings() {
         if (!javaServerIP.trim()) {
@@ -224,6 +221,72 @@
             error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
         });
     }
+
+    async function addSpecialPkg() {
+        const pkgID = Number(selectedPkgID);
+        if (!pkgID || isNaN(pkgID)) {
+            toast.error("Please select a valid package.");
+            return;
+        }
+        if (specialPkgIDs.includes(pkgID)) {
+            toast.error("Package already added.");
+            return;
+        }
+        const newIDs = [...specialPkgIDs, pkgID];
+        const promise = fetch("/api/admin/settings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                key: "specialPkgIDs",
+                value: newIDs,
+            }),
+        }).then(async (response) => {
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to add special package.");
+            }
+            selectedPkgID = "";
+            invalidateAll();
+            return result;
+        });
+        toast.promise(promise, {
+            loading: "Adding special package...",
+            success: "Special package added!",
+            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
+        });
+    }
+
+    async function removeSpecialPkg(pkgID: number) {
+        if (!specialPkgIDs.includes(pkgID)) {
+            toast.error("Package not in special list.");
+            return;
+        }
+        const newIDs = specialPkgIDs.filter((id) => id !== pkgID);
+        const promise = fetch("/api/admin/settings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                key: "specialPkgIDs",
+                value: newIDs,
+            }),
+        }).then(async (response) => {
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to remove special package.");
+            }
+            invalidateAll();
+            return result;
+        });
+        toast.promise(promise, {
+            loading: "Removing special package...",
+            success: "Special package removed!",
+            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
+        });
+    }
 </script>
 
 <Seo title={data.user?.global_name || ""} />
@@ -346,6 +409,41 @@
                                 <Input bind:value={bedrockServerIP} placeholder="Enter Bedrock server IP (e.g., play.example.com)" />
                                 <Input bind:value={bedrockServerPort} placeholder="Enter Bedrock port (default: 19132)" />
                                 <Button onclick={updateServerSettings}>Update Server Settings</Button>
+                            </div>
+                        </Popup>
+
+                        <!-- Special Packages Settings -->
+                        <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
+                            <h3 class="font-minecrafter mb-2 text-lg">Special Packages</h3>
+                            <div class="flex flex-col gap-2">
+                                {#each specialPkgs as pkg (pkg.id)}
+                                    <div class="flex items-center justify-between gap-2 border-2 border-neutral-700 bg-neutral-800 p-2">
+                                        <span>{pkg.name}</span>
+                                        <Button iconName="error" size="sm" onclick={() => removeSpecialPkg(pkg.id)} />
+                                    </div>
+                                {/each}
+                                {#if specialPkgs.length === 0}
+                                    <span class="text-xs text-neutral-400">No special packages set.</span>
+                                {/if}
+                            </div>
+                        </div>
+
+                        <Popup title="Add Special Package">
+                            {#snippet trigger()}
+                                <Button>Add Special Package</Button>
+                            {/snippet}
+                            <div class="flex w-full flex-col gap-2">
+                                <Select
+                                    value={selectedPkgID}
+                                    items={data.pkgs
+                                        .filter((pkg) => !specialPkgIDs.includes(pkg.id))
+                                        .map((pkg) => ({
+                                            value: String(pkg.id),
+                                            label: pkg.name,
+                                        }))}
+                                    onValueChange={(v) => (selectedPkgID = v)}
+                                />
+                                <Button onclick={addSpecialPkg}>Add</Button>
                             </div>
                         </Popup>
 

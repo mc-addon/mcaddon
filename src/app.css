@@ -20,6 +20,7 @@
 @theme {
     --font-minecrafter: "Minecrafter", sans-serif;
     --font-minecraftia: "Minecraftia", sans-serif;
+    --glow-color: 255, 255, 255;
 }
 
 body {
@@ -55,5 +56,47 @@ body {
     }
     .text-shadow-mc {
         @apply text-shadow-[0.1em_0.15em_0_var(--color-neutral-800)];
+    }
+}
+
+@layer utilities {
+    .special-card {
+        border-radius: inherit;
+        background: linear-gradient(270deg, var(--color-neutral-50), var(--color-neutral-950), var(--color-neutral-50));
+        background-size: 200% 200%;
+        animation: special-card 6s ease infinite;
+    }
+
+    .special-text {
+        background: linear-gradient(270deg, var(--color-neutral-950), var(--color-neutral-50), var(--color-neutral-950));
+        background-size: 200% 200%;
+        animation: special-text 1.5s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        fill: transparent;
+        filter: drop-shadow(0 0 2px rgba(var(--glow-color), 0.6)) drop-shadow(0 0 4px rgba(var(--glow-color), 0.4))
+            drop-shadow(0 0 12px rgba(var(--glow-color), 0));
+    }
+}
+
+@keyframes special-card {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes special-text {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
     }
 }

@@ -66,54 +66,69 @@
                 <h1 class="font-minecrafter text-center text-3xl md:text-left">{category.name}</h1>
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
                     {#each category.packages as pkg (pkg.id)}
-                        <a
-                            class="flex h-120 w-full cursor-pointer flex-col gap-2 border-2 border-neutral-700 bg-neutral-800 p-4 transition-colors duration-200 select-none hover:border-neutral-500"
-                            href={`/store/${pkg.id}`}
-                            onmousedown={() => playSound("click")}
+                        {@const isSpecial = data.specialPkgIDs?.includes(pkg.id) || false}
+                        <div
+                            class="relative min-h-120 w-full cursor-pointer overflow-hidden border-2 transition-colors duration-200 select-none
+                            {isSpecial ? 'border-transparent' : 'border-neutral-700 hover:border-neutral-500'} box-border"
+                            class:special-card={isSpecial}
                         >
-                            <div
-                                class="aspect-video w-full bg-neutral-700 bg-cover bg-center bg-no-repeat"
-                                style="background-image: url({pkg.image});"
-                            ></div>
-                            <div class="flex flex-1 flex-col gap-2">
-                                <h2 class="font-minecrafter text-center text-xl leading-tight">{pkg.name}</h2>
-                                <div class="flex-1">
-                                    <p class="line-clamp-4 text-left text-sm leading-relaxed">
-                                        {@html pkg.description}
-                                    </p>
+                            {#if isSpecial}
+                                <div class="absolute top-4 -left-8 z-10 w-40 -rotate-32 transform">
+                                    <div class="text-shadow-mc bg-red-600 px-8 py-1 text-center text-xs font-bold ring-2 ring-red-400/30">
+                                        Special
+                                    </div>
                                 </div>
-                            </div>
-                            <p class="text-left text-sm">
-                                Price: <span class="font-bold text-yellow-400">{pkg.total_price} {pkg.currency}</span>
-                            </p>
-                            <div class="flex w-full items-center justify-between gap-2">
-                                <Tooltip>
-                                    {#snippet trigger()}
-                                        <Button
-                                            iconName="chest"
-                                            disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user || !data.inGuild}
-                                            onclick={async (e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                basketCooldownManager.addToBasketWithCooldown(data.basket.ident, pkg.id, pkg.name);
-                                            }}
-                                        />
-                                    {/snippet}
-                                    Add to Basket
-                                </Tooltip>
-                                <Button
-                                    loading={buyNowLoading[pkg.id]}
-                                    disabled={!data.user || !data.inGuild}
-                                    onclick={async (e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        await handleBuyNow(pkg.id, pkg.name);
-                                    }}
-                                >
-                                    {buyNowLoading[pkg.id] ? "Processing..." : "Buy Now"}
-                                </Button>
-                            </div>
-                        </a>
+                            {/if}
+                            <a
+                                class="relative flex size-full flex-col gap-2 overflow-hidden bg-neutral-800 p-4"
+                                style={isSpecial ? "background-image: url(/textures/special_card.webp);" : ""}
+                                href={`/store/${pkg.id}`}
+                                onmousedown={() => playSound("click")}
+                            >
+                                <div
+                                    class="aspect-video w-full bg-neutral-700 bg-cover bg-center bg-no-repeat"
+                                    style="background-image: url({pkg.image});"
+                                ></div>
+                                <div class="flex flex-1 flex-col gap-2">
+                                    <h2 class="font-minecrafter leading-tigh text-center text-xl">{pkg.name}</h2>
+                                    <div class="flex-1">
+                                        <p class="line-clamp-4 text-left text-sm leading-relaxed">
+                                            {@html pkg.description}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="text-left text-sm">
+                                    Price: <span class="font-bold text-yellow-400">{pkg.total_price} {pkg.currency}</span>
+                                </p>
+                                <div class="flex w-full items-center justify-between gap-2">
+                                    <Tooltip>
+                                        {#snippet trigger()}
+                                            <Button
+                                                iconName="chest"
+                                                disabled={basketCooldownManager.isOnCooldown(pkg.id) || !data.user || !data.inGuild}
+                                                onclick={async (e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    basketCooldownManager.addToBasketWithCooldown(data.basket.ident, pkg.id, pkg.name);
+                                                }}
+                                            />
+                                        {/snippet}
+                                        Add to Basket
+                                    </Tooltip>
+                                    <Button
+                                        loading={buyNowLoading[pkg.id]}
+                                        disabled={!data.user || !data.inGuild}
+                                        onclick={async (e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            await handleBuyNow(pkg.id, pkg.name);
+                                        }}
+                                    >
+                                        {buyNowLoading[pkg.id] ? "Processing..." : "Buy Now"}
+                                    </Button>
+                                </div>
+                            </a>
+                        </div>
                     {/each}
                 </div>
             </div>

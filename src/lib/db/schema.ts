@@ -22,6 +22,7 @@ export interface SettingsMap {
             port: number;
         };
     };
+    specialPkgIDs: number[];
 }
 // NOTE: If you are adding new settings, ensure to update the SettingsMap interface accordingly
 // Also update the validation logic in the API handler in /api/admin/settings
