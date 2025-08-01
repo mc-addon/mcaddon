@@ -50,7 +50,7 @@
     >
         {#if user}
             <PixelatedImage src={getUserAvatar(user.id, user.avatar)} alt="User Avatar" class="size-8" />
-            <p>{user.global_name}</p>
+            <p>{user?.global_name || user.username}</p>
         {/if}
     </svelte:element>
 </div>

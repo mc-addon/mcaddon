@@ -288,7 +288,7 @@
     }
 </script>
 
-<Seo title={data.user?.global_name || ""} />
+<Seo title={data.user?.global_name || data.user?.username} />
 
 <div class="size-full overflow-y-auto p-2 md:overflow-hidden">
     <div
@@ -307,7 +307,7 @@
                             <img src="/icons/discord.webp" alt="Discord" class="h-6" />
                             <div>
                                 <p class="text-xs text-neutral-400">Discord Name</p>
-                                <p class="font-bold text-yellow-400">{data.user?.global_name}</p>
+                                <p class="font-bold text-yellow-400">{data.user?.global_name || data.user?.username}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -484,7 +484,7 @@
                                                             />
                                                             <div>
                                                                 <p class="text-sm font-bold text-white">
-                                                                    {admin.global_name || admin.username}
+                                                                    {admin?.global_name || admin.username}
                                                                 </p>
                                                                 <p class="text-xs text-neutral-400">{admin.id}</p>
                                                             </div>
@@ -517,6 +517,10 @@
                                 <Button onclick={addAdmin}>Add Admin</Button>
                             </div>
                         </Popup>
+                    </div>
+                {:else}
+                    <div class="flex size-full items-center justify-center p-10">
+                        <p class="text-2xl">Welcome {data.user?.global_name || data.user?.username}!</p>
                     </div>
                 {/if}
             </div>
