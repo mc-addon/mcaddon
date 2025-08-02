@@ -67,12 +67,12 @@ Official MC Addon Website
 
 1. Follow steps 1-8 from the [installation](#-installation) section.
 
-2. Login to your Cloudflare Account from `wrangler`.
+2. Login to your Cloudflare Account via `wrangler`.
     ```sh
     bunx wrangler login
     ```
 
-3. Create `wrangler.toml` file from `wrangler.toml.example` in the root directory and fill in the required values.
+3. Create `wrangler.toml` file from `example.wrangler.toml` in the root directory and fill in the required values.
     > *Refer step 4 from the [installation](#-installation) section for ENV Vars.*
 
 4. Deploy
