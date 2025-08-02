@@ -1,15 +1,17 @@
-import { env } from "$env/dynamic/private";
-import type { NeonQueryFunction } from "@neondatabase/serverless";
-import { neon } from "@neondatabase/serverless";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-import { drizzle } from "drizzle-orm/neon-http";
+import { dev } from "$app/environment";
+import { DATABASE_URL } from "$env/static/private";
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
 
-if (!env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
+export const connectPGDatabase = () => {
+    if (!DATABASE_URL) {
+        throw new Error("DATABASE_URL is not defined. Please set it in your environment variables.");
+    }
+    const client = postgres(DATABASE_URL!);
+    return drizzle(client, { schema, logger: dev });
+};
 
-const client = neon(env.DATABASE_URL);
-export const db = drizzle(client, { schema });
-
-export type DB = NeonHttpDatabase<typeof schema> & {
-    $client: NeonQueryFunction<false, false>;
+export type DB = PostgresJsDatabase<typeof schema> & {
+    $client: postgres.Sql<{}>;
 };

@@ -1,6 +1,6 @@
 import { JWT_SECRET, TEBEX_PRIVATE_KEY } from "$env/static/private";
 import { PUBLIC_TEBEX_TOKEN } from "$env/static/public";
-import { db } from "$lib/db";
+import { connectPGDatabase } from "$lib/db";
 import type { MinecraftUserInfo } from "$lib/minecraft/types";
 import { verifyData } from "$lib/utils/jwt";
 import { redirect, type Handle } from "@sveltejs/kit";
@@ -31,7 +31,7 @@ const setLocalsHook: Handle = async ({ event, resolve }) => {
         const mcData = await verifyData<MinecraftUserInfo>(mc, JWT_SECRET);
         event.locals.mc = mcData;
     }
-    event.locals.db = db;
+    event.locals.db = connectPGDatabase();
     event.locals.tebex = new TebexHeadless(PUBLIC_TEBEX_TOKEN, TEBEX_PRIVATE_KEY);
 
     return resolve(event);

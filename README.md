@@ -27,8 +27,8 @@ Official MC Addon Website
 
     <summary>ENV Vars</summary>
 
-    - Get `DATABASE_URL` from Neon DB.
-        ![Neon DB URL](./assets/db_url.png)
+    - Get `DATABASE_URL` from Supabase.
+        ![Supabase DB URL](./assets/db_url.png)
     - Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
         ![Client Info](./assets/client_info.png)
     - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
@@ -45,11 +45,16 @@ Official MC Addon Website
 5. Add redirect url at the Discord Developer Portal.
     ![Discord Developer Portal](./assets/redirect_url.png)
 
- 6. Push the database schema to Neon DB.
+6. Push the database schema.
     ```sh
     bun run db:push
     ```
-7. Start the app
+7. Navigate to **Table Editor** in Supabase Dashboard and enable **RLS** for all the tables.
+
+8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
+    ![Policies](./assets/policies.png)
+
+9. Start the app
    ```sh
    bun run dev
    ```
