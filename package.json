@@ -22,13 +22,14 @@
         "tailwindcss": "^4.1.11",
         "tsx": "^4.20.3",
         "typescript": "^5.9.2",
-        "vite": "^6.3.5"
+        "vite": "^6.3.5",
+        "wrangler": "^4.27.0"
     },
     "private": true,
     "scripts": {
         "dev": "vite dev",
         "build": "vite build",
-        "preview": "vite preview",
+        "preview": "bun run build && wrangler dev",
         "prepare": "svelte-kit sync || echo ''",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -37,7 +38,8 @@
         "sync-assets": "bun scripts/sync-assets.ts",
         "db:push": "drizzle-kit push",
         "db:migrate": "drizzle-kit migrate",
-        "db:studio": "drizzle-kit studio"
+        "db:studio": "drizzle-kit studio",
+        "deploy": "bun run build && wrangler deploy"
     },
     "type": "module",
     "dependencies": {

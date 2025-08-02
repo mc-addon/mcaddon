@@ -63,9 +63,23 @@ Official MC Addon Website
 > When you add assets to the `/static` directory, run `bun run sync-assets` to save assets path to the `/static/assets.json` file.
 > The `/static/assets.json` file is used by the loading screen to preload assets.
 
-> [!TIP]
-> SvelteKit is configured to use [Cloudflare Adapter](https://svelte.dev/docs/kit/adapter-cloudflare).
-> Use [Cloudflare Pages](https://pages.cloudflare.com) to deploy the app.
+## 🚀 Production
+
+1. Follow steps 1-8 from the [installation](#-installation) section.
+
+2. Login to your Cloudflare Account from `wrangler`.
+    ```sh
+    bunx wrangler login
+    ```
+
+3. Create `wrangler.toml` file from `wrangler.toml.example` in the root directory and fill in the required values.
+    > *Refer step 4 from the [installation](#-installation) section for ENV Vars.*
+
+4. Deploy
+    ```sh
+    bunx wrangler deploy
+    ```
+
 
 ## ❤️ Contributing
 
