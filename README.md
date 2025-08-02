@@ -77,7 +77,7 @@ Official MC Addon Website
 
 4. Deploy
     ```sh
-    bunx wrangler deploy
+    bun run deploy
     ```
 
 
