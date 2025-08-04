@@ -49,9 +49,9 @@
     let refreshInterval = $state(30000); // 30 seconds
     let refreshDisabled = $state(false);
     let autoUpdateEnabled = $state(true);
+    let pingerInterval: NodeJS.Timeout | null = $state(null);
 
     $effect(() => {
-        cooldownRefresh();
         if (autoUpdateEnabled) {
             startPinging();
         } else {
@@ -69,26 +69,35 @@
 
     async function ping(isBedrock: boolean) {
         const statusSetter = (s: PingStatus) => {
-            if (isBedrock) {
-                bedrockPingStatus = s;
-            } else {
-                javaPingStatus = s;
+            // Only update state if auto-update is enabled or this is a manual refresh
+            if (autoUpdateEnabled || refreshDisabled) {
+                if (isBedrock) {
+                    bedrockPingStatus = s;
+                } else {
+                    javaPingStatus = s;
+                }
             }
         };
 
         const timeSetter = (t: number | null) => {
-            if (isBedrock) {
-                bedrockResponseTime = t;
-            } else {
-                javaResponseTime = t;
+            // Only update state if auto-update is enabled or this is a manual refresh
+            if (autoUpdateEnabled || refreshDisabled) {
+                if (isBedrock) {
+                    bedrockResponseTime = t;
+                } else {
+                    javaResponseTime = t;
+                }
             }
         };
 
         const dataSetter = (d: ServerData | null) => {
-            if (isBedrock) {
-                bedrockServerData = d;
-            } else {
-                javaServerData = d;
+            // Only update state if auto-update is enabled or this is a manual refresh
+            if (autoUpdateEnabled || refreshDisabled) {
+                if (isBedrock) {
+                    bedrockServerData = d;
+                } else {
+                    javaServerData = d;
+                }
             }
         };
 
@@ -107,7 +116,7 @@
 
         try {
             const controller = new AbortController();
-            setTimeout(() => controller.abort(), 15000);
+            pingerInterval = setTimeout(() => controller.abort(), 15000);
 
             const url = isBedrock ? `${PUBLIC_MCSTATUS_BEDROCK_API}/${ip}:${port}` : `${PUBLIC_MCSTATUS_JAVA_API}/${ip}`;
 
@@ -127,7 +136,10 @@
                 dataSetter(null);
             }
 
-            lastUpdated = new Date();
+            // Only update lastUpdated if auto-update is enabled or this is a manual refresh
+            if (autoUpdateEnabled || refreshDisabled) {
+                lastUpdated = new Date();
+            }
         } catch {
             statusSetter("offline");
             timeSetter(null);
@@ -149,12 +161,17 @@
             clearInterval(intervalId);
             intervalId = null;
         }
+        if (pingerInterval) {
+            clearTimeout(pingerInterval);
+            pingerInterval = null;
+        }
     }
 
     function handleIntervalChange(newInterval: string) {
         refreshInterval = parseInt(newInterval);
         if (autoUpdateEnabled) {
-            startPinging();
+            stopPinging(); // Stop current pinging first
+            startPinging(); // Restart with new interval
         }
     }
 
@@ -351,7 +368,12 @@ Bedrock Server: {servers[1].ip}:{servers[1].port}
             <!-- Interval Selector -->
             <div class="flex items-center gap-2">
                 <span class="text-sm text-neutral-200">Interval:</span>
-                <Select value={refreshInterval.toString()} items={intervalOptions} onValueChange={handleIntervalChange} disabled={refreshDisabled} />
+                <Select
+                    value={refreshInterval.toString()}
+                    items={intervalOptions}
+                    onValueChange={handleIntervalChange}
+                    disabled={refreshDisabled || !autoUpdateEnabled}
+                />
             </div>
             <!-- Manual Controls -->
             <div class="flex flex-col gap-2 sm:flex-row sm:gap-5">
