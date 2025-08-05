@@ -304,7 +304,7 @@
                 I verify that the Minecraft account with the name <span class="text-yellow-400">{data.mc?.username}</span>, which I am currently using
                 to make this purchase, belongs to me.
             </li>
-            <li>By purchasing, you confirm that you have the authorization to use the payment method.</li>
+            <li>By purchasing, I confirm that I have the authorization to use the payment method.</li>
         </ul>
     </div>
     <div class="mt-4 flex flex-col gap-2">
