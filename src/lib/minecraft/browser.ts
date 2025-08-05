@@ -1,6 +1,6 @@
 import { toast } from "svelte-sonner";
 
-export async function setMC(username: string, type: "java" | "bedrock") {
+export async function setMC(username: string) {
     const promise = fetch("/api/minecraft", {
         method: "POST",
         headers: {
@@ -8,7 +8,6 @@ export async function setMC(username: string, type: "java" | "bedrock") {
         },
         body: JSON.stringify({
             action: "set",
-            type,
             username,
         }),
     }).then(async (resp) => {
@@ -19,8 +18,8 @@ export async function setMC(username: string, type: "java" | "bedrock") {
     });
 
     toast.promise(promise, {
-        loading: `Setting Minecraft ${type} account...`,
-        success: `Minecraft ${type} account successfully set to ${username}!`,
+        loading: `Setting Minecraft account...`,
+        success: `Minecraft account successfully set to ${username}!`,
         error: (err) => {
             if (err instanceof Error) {
                 return err.message;

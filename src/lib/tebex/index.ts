@@ -1,7 +1,28 @@
 import { updateBasket } from "$lib/stores/basket";
-import { hideAllPopups } from "$lib/stores/popup";
+import { hideAllPopups, showPopup } from "$lib/stores/popup";
 import { toast } from "svelte-sonner";
 import type { ApplyType, Basket } from "tebex_headless";
+
+// Store pending checkout action for after TOS agreement
+let pendingCheckoutAction: (() => Promise<void>) | null = null;
+
+// Helper function to always show TOS and execute action after agreement
+async function executeWithTosCheck(action: () => Promise<void>, actionName: string = "complete this action"): Promise<void> {
+    // Always show TOS popup for every purchase
+    pendingCheckoutAction = action;
+    showPopup("tosPopup");
+    toast.info(`Please agree to the Terms of Service to ${actionName}.`);
+}
+
+// Function to execute pending checkout after TOS agreement
+export function executePendingCheckout(): Promise<void> | null {
+    if (pendingCheckoutAction) {
+        const action = pendingCheckoutAction;
+        pendingCheckoutAction = null;
+        return action();
+    }
+    return null;
+}
 
 // Utility for managing add to basket cooldown
 export class BasketCooldownManager {
@@ -61,28 +82,52 @@ export async function createTempBasket(): Promise<Basket> {
 
 // One-click buy function using temporary basket
 export async function buyNow(pkgID: number, pkgName: string, mainBasketIdent: string): Promise<void> {
-    try {
-        // Create a temporary basket for this single purchase
-        const tempBasket = await createTempBasket();
+    const buyAction = async () => {
+        try {
+            // Create a temporary basket for this single purchase
+            const tempBasket = await createTempBasket();
 
-        // Add the item to the temporary basket
-        await addToBasket(tempBasket.ident, pkgID, pkgName, false, false);
+            // Add the item to the temporary basket
+            await addToBasket(tempBasket.ident, pkgID, pkgName, false, false);
 
-        // Setup checkout for the temporary basket
-        setupTebexCheckout(tempBasket.ident);
+            // Setup checkout for the temporary basket
+            setupTebexCheckout(tempBasket.ident);
 
-        // Immediately initiate checkout
-        await initiateCheckout();
+            // Hide all popups
+            hideAllPopups();
 
-        // Re-setup the main basket after checkout
-        setupTebexCheckout(mainBasketIdent);
-    } catch (err) {
-        const error = err instanceof Error ? err.message : String(err);
-        console.error("Buy now error:", error);
-        toast.error(error || "Failed to complete purchase. Please try again.");
-    }
+            // Import Tebex dynamically to avoid SSR issues
+            const { default: Tebex } = await import("@tebexio/tebex.js");
+
+            // Wait for checkout to be ready and launch
+            await new Promise<void>((resolve, reject) => {
+                // Set a timeout in case checkout doesn't open
+                const timeout = setTimeout(() => {
+                    reject(new Error("Checkout window failed to open"));
+                }, 10000);
+
+                // Listen for checkout events
+                Tebex.checkout.on("open", () => {
+                    clearTimeout(timeout);
+                    resolve();
+                });
+
+                // Launch Tebex checkout
+                Tebex.checkout.launch();
+            });
+
+            // Re-setup the main basket after checkout
+            setupTebexCheckout(mainBasketIdent);
+        } catch (err) {
+            const error = err instanceof Error ? err.message : String(err);
+            console.error("Buy now error:", error);
+            toast.error(error || "Failed to complete purchase. Please try again.");
+            throw err; // Re-throw to ensure TOS processing state is reset
+        }
+    };
+
+    await executeWithTosCheck(buyAction, "complete your purchase");
 }
-
 export async function addToBasket(
     ident: string,
     pkgID: number,
@@ -266,21 +311,39 @@ export async function getBasket(basketIdent: string): Promise<Basket> {
 }
 
 export async function initiateCheckout(): Promise<void> {
-    try {
-        // Hide all popups
-        hideAllPopups();
+    const checkoutAction = async () => {
+        try {
+            // Hide all popups
+            hideAllPopups();
 
-        // Import Tebex dynamically to avoid SSR issues
-        const { default: Tebex } = await import("@tebexio/tebex.js");
+            // Import Tebex dynamically to avoid SSR issues
+            const { default: Tebex } = await import("@tebexio/tebex.js");
 
-        // Launch Tebex checkout
-        Tebex.checkout.launch();
-    } catch (error) {
-        console.error("Checkout error:", error);
-        toast.error("Failed to initiate checkout. Please try again.");
-    }
+            // Wait for checkout to be ready and launch
+            await new Promise<void>((resolve, reject) => {
+                // Set a timeout in case checkout doesn't open
+                const timeout = setTimeout(() => {
+                    reject(new Error("Checkout window failed to open"));
+                }, 10000);
+
+                // Listen for checkout events
+                Tebex.checkout.on("open", () => {
+                    clearTimeout(timeout);
+                    resolve();
+                });
+
+                // Launch Tebex checkout
+                Tebex.checkout.launch();
+            });
+        } catch (error) {
+            console.error("Checkout error:", error);
+            toast.error("Failed to initiate checkout. Please try again.");
+            throw error; // Re-throw to ensure TOS processing state is reset
+        }
+    };
+
+    await executeWithTosCheck(checkoutAction, "proceed to checkout");
 }
-
 export function setupTebexCheckout(basketIdent: string) {
     // Import Tebex dynamically to avoid SSR issues
     import("@tebexio/tebex.js")

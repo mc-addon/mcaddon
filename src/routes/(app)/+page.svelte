@@ -5,7 +5,6 @@
     import Popup from "$lib/components/ui/Popup.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Title from "$lib/components/ui/Title.svelte";
-    import Toggle from "$lib/components/ui/Toggle.svelte";
     import UserButton from "$lib/components/UserButton.svelte";
     import { setMC, unsetMC } from "$lib/minecraft/browser";
     import { toast } from "svelte-sonner";
@@ -14,17 +13,15 @@
     let { data }: { data: PageData } = $props();
     let input = $state<string>(data.mc ? data.mc.username : "");
     let inputImage = $derived(input ? { src: `https://cravatar.eu/avatar/${input}/600`, alt: input } : { src: "", alt: "" });
-    let isJava = $derived(!data.mc || data.mc.type === "java");
     let loading = $state<boolean>(false);
 
     async function setMinecraftAcc() {
         if (input.trim()) {
             loading = true;
             try {
-                await setMC(input.trim(), isJava ? "java" : "bedrock");
+                await setMC(input.trim());
             } finally {
                 invalidateAll();
-                input = "";
                 loading = false;
             }
         } else {
@@ -56,8 +53,9 @@
             <Popup title="Minecraft Account">
                 {#snippet trigger()}
                     <Button
-                        iconName={data.mc?.type ? "" : "grass_block"}
+                        iconName={data.mc ? "" : "grass_block"}
                         img={data.mc ? { src: `https://cravatar.eu/avatar/${data.mc?.username}/600`, alt: data.mc?.username } : { src: "", alt: "" }}
+                        onclick={() => (input = data.mc ? data.mc.username : "")}
                     >
                         {data.mc ? data.mc.username.slice(0, 8) + "..." : "Minecraft"}
                     </Button>
@@ -66,16 +64,11 @@
                     <Input
                         bind:value={input}
                         disabled={loading}
-                        placeholder="Minecraft {isJava ? 'username' : 'gamertag'}"
+                        placeholder="Notch"
                         iconName="grass_block"
                         bind:img={inputImage}
                         onEnter={setMinecraftAcc}
                     />
-                    <div class="flex w-full items-center justify-center gap-2">
-                        <p>Bedrock</p>
-                        <Toggle bind:status={isJava} />
-                        <p>Java</p>
-                    </div>
                     <Button {loading} size="sm" onclick={setMinecraftAcc}>Set Minecraft Account</Button>
                     {#if data.mc}
                         <Button

@@ -4,6 +4,7 @@ import { writable } from "svelte/store";
 // Example: showNewPopup: boolean;
 export interface PopupsStore {
     basketPopup: boolean;
+    tosPopup: boolean;
     // Add more popups here as needed
     // showNewPopup: boolean;
 }
@@ -11,6 +12,7 @@ export interface PopupsStore {
 // Store with initial state - all popups closed by default
 export const store = writable<PopupsStore>({
     basketPopup: false,
+    tosPopup: false,
     // Add more popups with default false values
     // showNewPopup: false,
 });
@@ -43,6 +45,7 @@ export function hideAllPopups() {
 export function resetPopups() {
     store.set({
         basketPopup: false,
+        tosPopup: false,
         // Add more popups with default false values when you add them
         // showNewPopup: false,
     });

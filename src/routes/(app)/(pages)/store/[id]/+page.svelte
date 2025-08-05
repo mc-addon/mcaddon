@@ -14,7 +14,6 @@
     }
 
     let basket = $state(data.basket);
-    let buyNowLoading = $state<boolean>(false);
     const isSpecial = data.specialPkgIDs?.includes(data.pkg.id) || false;
 
     // Subscribe to basket store updates
@@ -25,12 +24,7 @@
     });
 
     async function handleBuyNow() {
-        buyNowLoading = true;
-        try {
-            await buyNow(data.pkg.id, data.pkg.name, basket.ident);
-        } finally {
-            buyNowLoading = false;
-        }
+        await buyNow(data.pkg.id, data.pkg.name, basket.ident);
     }
 </script>
 
@@ -95,7 +89,6 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
                         Share
                     </Button>
                     <Button
-                        loading={buyNowLoading}
                         disabled={!data.user || !data.inGuild}
                         onclick={async (e) => {
                             e.preventDefault();
@@ -103,7 +96,7 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
                             await handleBuyNow();
                         }}
                     >
-                        {buyNowLoading ? "Processing..." : "Buy Now"}
+                        Buy Now
                     </Button>
                 </div>
             </div>

@@ -10,7 +10,6 @@
 
     let { data }: { data: PageData } = $props();
     let basket = $state<Basket>(data.basket);
-    let buyNowLoading = $state<Record<number, boolean>>({});
 
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {
@@ -20,12 +19,7 @@
     });
 
     async function handleBuyNow(pkgId: number, pkgName: string) {
-        buyNowLoading[pkgId] = true;
-        try {
-            await buyNow(pkgId, pkgName, basket.ident);
-        } finally {
-            buyNowLoading[pkgId] = false;
-        }
+        await buyNow(pkgId, pkgName, basket.ident);
     }
 </script>
 
@@ -116,7 +110,6 @@
                                         Add to Basket
                                     </Tooltip>
                                     <Button
-                                        loading={buyNowLoading[pkg.id]}
                                         disabled={!data.user || !data.inGuild}
                                         onclick={async (e) => {
                                             e.preventDefault();
@@ -124,7 +117,7 @@
                                             await handleBuyNow(pkg.id, pkg.name);
                                         }}
                                     >
-                                        {buyNowLoading[pkg.id] ? "Processing..." : "Buy Now"}
+                                        Buy Now
                                     </Button>
                                 </div>
                             </a>

@@ -7,7 +7,16 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { basketStore, updateBasket } from "$lib/stores/basket";
     import { hidePopup, store as popupStore, showPopup } from "$lib/stores/popup";
-    import { applyCoupon, getBasket, initiateCheckout, removeCoupon, removeFromBasket, setupTebexCheckout, updateQuantity } from "$lib/tebex";
+    import {
+        applyCoupon,
+        executePendingCheckout,
+        getBasket,
+        initiateCheckout,
+        removeCoupon,
+        removeFromBasket,
+        setupTebexCheckout,
+        updateQuantity,
+    } from "$lib/tebex";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { fade, fly } from "svelte/transition";
@@ -21,6 +30,7 @@
     let applyCouponLoading = $state<boolean>(false);
     let couponType = $state<ApplyType>("coupons");
     let inputQtyLoading = $state<Record<number, boolean>>({});
+    let tosProcessing = $state<boolean>(false);
 
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {
@@ -74,6 +84,29 @@
             await updateQuantity(basket.ident, pkg.id, pkg.in_basket.quantity, pkg.name);
         } finally {
             inputQtyLoading[pkg.id] = false;
+        }
+    }
+
+    function handleTosAgreement() {
+        tosProcessing = true;
+
+        toast.success("Thank you for agreeing to our Terms of Service!");
+
+        // Execute any pending checkout action
+        const pendingAction = executePendingCheckout();
+        if (pendingAction) {
+            pendingAction
+                .catch((error) => {
+                    console.error("Error executing pending checkout:", error);
+                    toast.error("Failed to complete your action. Please try again.");
+                })
+                .finally(() => {
+                    tosProcessing = false;
+                    hidePopup("tosPopup");
+                });
+        } else {
+            tosProcessing = false;
+            hidePopup("tosPopup");
         }
     }
 </script>
@@ -253,6 +286,32 @@
         >
             Continue Shopping
         </Button>
+    </div>
+</Popup>
+
+<!-- TOS Popup -->
+<Popup bind:open={$popupStore.tosPopup} title="Terms of Service" drawerDismissible={false}>
+    <div class="p-4" class:cursor-wait={tosProcessing}>
+        <p class="text-sm text-neutral-400">By using our services, you agree to the following terms and conditions. Please read them carefully.</p>
+        <ul class="mt-2 space-y-2 pl-5 text-sm text-neutral-300 *:before:mr-2 *:before:text-neutral-500 *:before:content-['●']">
+            <li>All purchases are final and non-refundable.</li>
+            <li>We reserve the right to modify or discontinue any item at any time.</li>
+            <li>Violation of these terms may result in account suspension or termination.</li>
+            <li>
+                I confirm that I am either over 13 or have guardian permission, and I consent to the collection and use of my data for this purchase.
+            </li>
+            <li>
+                I verify that the Minecraft account with the name <span class="text-yellow-400">{data.mc?.username}</span>, which I am currently using
+                to make this purchase, belongs to me.
+            </li>
+            <li>By purchasing, you confirm that you have the authorization to use the payment method.</li>
+        </ul>
+    </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <Button onclick={handleTosAgreement} size="sm" loading={tosProcessing} disabled={tosProcessing} class={tosProcessing ? "cursor-wait" : ""}>
+            {tosProcessing ? "Processing payment..." : "I Agree to Terms of Service"}
+        </Button>
+        <Button onclick={() => hidePopup("tosPopup")} size="sm" class="bg-neutral-700 hover:bg-neutral-600" disabled={tosProcessing}>Cancel</Button>
     </div>
 </Popup>
 
