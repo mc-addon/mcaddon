@@ -1,7 +1,7 @@
 import { json } from "@sveltejs/kit";
 import type { Basket } from "tebex_headless";
 
-export const POST = async ({ locals, url }) => {
+export const POST = async ({ locals, url, getClientAddress }) => {
     const user = locals.user;
     const mc = locals.mc;
     if (!user) {
@@ -14,7 +14,14 @@ export const POST = async ({ locals, url }) => {
         }
 
         // Create a temporary basket for single-item purchases
-        const basket: Basket = await locals.tebex.createMinecraftBasket(mc.username, url.origin, url.origin);
+        const basket: Basket = await locals.tebex.createMinecraftBasket(
+            mc.username,
+            url.origin,
+            url.origin,
+            undefined,
+            undefined,
+            getClientAddress(),
+        );
         return json(basket, { status: 200 });
     } catch (error: any) {
         const data = error.response;

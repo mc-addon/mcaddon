@@ -3,7 +3,7 @@ import { checkIfUserInGuild } from "$lib/discord/user";
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
+export const load: LayoutServerLoad = async ({ locals, url, fetch, getClientAddress }) => {
     const user = locals.user;
     const mc = locals.mc;
     if (!mc || !mc?.username) {
@@ -11,7 +11,7 @@ export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     }
 
     const inGuild = user ? await checkIfUserInGuild(fetch) : false;
-    const basket = await locals.tebex.createMinecraftBasket(mc.username, url.origin, url.origin);
+    const basket = await locals.tebex.createMinecraftBasket(mc.username, url.origin, url.origin, undefined, undefined, getClientAddress());
     const specialPkgIDs = await fetchSettings(locals.db, "specialPkgIDs");
     return { basket, user, inGuild, specialPkgIDs };
 };
