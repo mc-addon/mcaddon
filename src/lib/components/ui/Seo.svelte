@@ -7,7 +7,7 @@
     }
     let {
         title = "",
-        description = "Welcome to the official hub of MC Addon Network — a competitive, community-driven Lifesteal Minecraft Network with thrilling mechanics, epic events, and intense mini-games! Whether you're here to grind, fight, build, or just vibe with friends — you're in the right place.",
+        description = "Welcome to the official hub of MC Addon! A competitive, community-driven Lifesteal Minecraft Network with thrilling mechanics, epic events, and intense mini-games!",
         image = "/favicon.webp",
         author = "MC Addon Network",
     }: Props = $props();
