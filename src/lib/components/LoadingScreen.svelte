@@ -11,9 +11,9 @@
         let unsubscribe: (() => void) | undefined;
 
         initializeLoadingScreen().then(() => {
-            // Watch for completion
+            // Watch for completion - use isLoading to determine when to hide
             unsubscribe = store.subscribe((state) => {
-                if (state.isLoaded && !state.isLoading) {
+                if (!state.isLoading && state.isLoaded) {
                     onComplete();
                 }
             });

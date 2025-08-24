@@ -6,7 +6,6 @@ const OUTPUT_FILE = "./static/assets.json";
 const EXCLUDED_DIRS = ["fonts"]; // Exclude fonts directory
 
 interface AssetsData {
-    version: number;
     totalAssets: number;
     assets: string[];
 }
@@ -67,7 +66,6 @@ async function syncAssets(): Promise<void> {
 
         // Create the assets object
         const assetsData: AssetsData = {
-            version: Date.now(), // Version timestamp for cache busting
             totalAssets: assetPaths.length,
             assets: assetPaths,
         };

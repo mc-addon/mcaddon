@@ -20,21 +20,15 @@ export const loadingScreenStore = writable<LoadingScreenStore>({
 });
 
 // Function to load asset paths from assets.json
-async function loadAssetPaths(): Promise<{ assets: string[]; version: number }> {
+async function loadAssetPaths(): Promise<string[]> {
     try {
         const response = await fetch("/assets.json");
         const data = await response.json();
-        return {
-            assets: data.assets || [],
-            version: data.version || 0,
-        };
+        return data.assets || [];
     } catch (error) {
         console.error("Failed to load assets.json:", error);
         // Fallback to empty array if assets.json fails to load
-        return {
-            assets: [],
-            version: 0,
-        };
+        return [];
     }
 }
 
@@ -120,25 +114,7 @@ export const initializeLoadingScreen = async (): Promise<void> => {
     if (!browser) return;
 
     // Load asset paths from assets.json
-    const assetData = await loadAssetPaths();
-    const { assets: assetPaths, version } = assetData;
-
-    // Check if assets were already loaded and if the version matches
-    const alreadyLoaded = localStorage.getItem("mcaddon-assets-loaded");
-    const storedVersion = localStorage.getItem("mcaddon-assets-version");
-
-    if (alreadyLoaded && storedVersion === version.toString()) {
-        loadingScreenStore.update((state) => ({
-            ...state,
-            isLoaded: true,
-            isLoading: false,
-            progress: 100,
-            loadedAssets: assetPaths.length,
-            totalAssets: assetPaths.length,
-            loadingText: "Done!",
-        }));
-        return;
-    }
+    const assetPaths = await loadAssetPaths();
 
     // If no assets loaded, mark as complete
     if (assetPaths.length === 0) {
@@ -196,28 +172,26 @@ export const initializeLoadingScreen = async (): Promise<void> => {
 
     await loadAssetsInBatches(assetPaths);
 
-    // Final update
+    // Final update - keep isLoading true until we're completely done
     loadingScreenStore.update((state) => ({
         ...state,
         loadingText: "Done!",
         progress: 100,
-        isLoading: false,
         isLoaded: true,
     }));
 
-    // Store loading state with version
-    localStorage.setItem("mcaddon-assets-loaded", "true");
-    localStorage.setItem("mcaddon-assets-version", version.toString());
+    // Brief pause before completing, then set isLoading to false
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Brief pause before completing
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    loadingScreenStore.update((state) => ({
+        ...state,
+        isLoading: false,
+    }));
 };
 
 export const resetLoadingScreen = () => {
     if (!browser) return;
 
-    localStorage.removeItem("mcaddon-assets-loaded");
-    localStorage.removeItem("mcaddon-assets-version");
     loadingScreenStore.update((state) => ({
         ...state,
         isLoaded: false,
@@ -227,9 +201,4 @@ export const resetLoadingScreen = () => {
         loadedAssets: 0,
         isLoading: true,
     }));
-};
-
-export const isAssetsLoaded = (): boolean => {
-    if (!browser) return false;
-    return localStorage.getItem("mcaddon-assets-loaded") === "true";
 };
