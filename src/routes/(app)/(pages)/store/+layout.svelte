@@ -115,177 +115,180 @@
 
 <!-- Basket Popup -->
 <Popup bind:open={$popupStore.basketPopup} title="Your Basket" drawerDismissible={false}>
-    {#if basket.packages.length === 0}
-        <div class="flex flex-col items-center justify-center gap-5 py-8">
-            <img src="/icons/chest.webp" alt="Empty basket" class="h-16 opacity-50" />
-            <p class="text-center text-neutral-400">Your basket is empty</p>
-            <p class="text-center text-sm text-neutral-400">Add some items to get started!</p>
-        </div>
-    {:else}
-        <div class="flex flex-col gap-5">
-            <!-- Basket Items -->
-            <div class="flex max-h-60 flex-col gap-2 overflow-y-auto" style="scrollbar-width: none;">
-                {#each basket.packages as pkg (pkg.id)}
-                    <div
-                        in:fly={{
-                            x: -200,
-                            duration: 200,
-                        }}
-                        out:fly={{
-                            x: 200,
-                            duration: 200,
-                        }}
-                        class="flex items-center gap-2 border-2 border-neutral-700 bg-neutral-800 p-2"
-                    >
-                        <div
-                            class="size-15 flex-shrink-0 bg-neutral-700 bg-cover bg-center bg-no-repeat"
-                            style="background-image: url({pkg.image});"
-                        ></div>
-                        <div class="min-w-0 flex-1">
-                            <h3 class="font-minecrafter truncate text-sm leading-tight">{pkg.name}</h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-neutral-400">Quantity:</span>
-                                <Input
-                                    bind:value={pkg.in_basket.quantity}
-                                    disabled={inputQtyLoading[pkg.id]}
-                                    class="h-6 w-16 text-xs"
-                                    onEnter={async () => handleQty(pkg)}
-                                />
-                            </div>
-                            <p class="text-xs text-neutral-400">
-                                Price: <span class="text-yellow-400">{pkg.in_basket.price} {basket.currency}</span>
-                            </p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <Tooltip>
-                                {#snippet trigger()}
-                                    <Button size="sm" iconName="error" onclick={() => removeFromBasket(basket.ident, pkg.id, pkg.name)} />
-                                {/snippet}
-                                Remove from basket
-                            </Tooltip>
-                        </div>
-                    </div>
-                {/each}
+    <div class="overflow-y-auto md:overflow-hidden">
+        {#if basket.packages.length === 0}
+            <div class="flex flex-col items-center justify-center gap-5 py-8">
+                <img src="/icons/chest.webp" alt="Empty basket" class="h-16 opacity-50" />
+                <p class="text-center text-neutral-400">Your basket is empty</p>
+                <p class="text-center text-sm text-neutral-400">Add some items to get started!</p>
             </div>
-            <div class="border-t-2 border-neutral-700"></div>
-            <!-- Coupon Section -->
-            <div class="space-y-2">
-                <h3 class="font-minecrafter text-left text-sm">Apply Discount Code</h3>
-                <div class="space-y-2">
-                    <!-- Type Selector -->
-                    <Select
-                        bind:value={couponType}
-                        items={couponTypeOptions}
-                        placeholder="Select discount type"
-                        onValueChange={() => {
-                            couponCode = "";
-                        }}
-                    />
-                    <!-- Input Section -->
-                    <div class="flex flex-col gap-2">
-                        <Input
-                            bind:value={couponCode}
-                            placeholder={couponType === "coupons"
-                                ? "Enter coupon code"
-                                : couponType === "giftcards"
-                                  ? "Enter gift card number"
-                                  : "Enter creator code"}
-                            class="flex-1"
-                            onEnter={handleApplyCoupon}
-                        />
-                        <Button onclick={handleApplyCoupon} loading={applyCouponLoading} disabled={!couponCode.trim()} size="sm">
-                            {applyCouponLoading ? "Applying..." : "Apply"}
-                        </Button>
+        {:else}
+            <div class="flex flex-col gap-5 md:flex-row">
+                <!-- Basket Items -->
+                <div class="flex w-full flex-col gap-2 md:max-h-80 md:w-[50%] md:overflow-y-auto" style="scrollbar-width: none;">
+                    {#each basket.packages as pkg (pkg.id)}
+                        <div
+                            in:fly={{
+                                x: -200,
+                                duration: 200,
+                            }}
+                            out:fly={{
+                                x: 200,
+                                duration: 200,
+                            }}
+                            class="flex items-center gap-2 border-2 border-neutral-700 bg-neutral-800 p-2"
+                        >
+                            <div
+                                class="size-15 flex-shrink-0 bg-neutral-700 bg-cover bg-center bg-no-repeat"
+                                style="background-image: url({pkg.image});"
+                            ></div>
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-minecrafter truncate text-sm leading-tight">{pkg.name}</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-neutral-400">Quantity:</span>
+                                    <Input
+                                        bind:value={pkg.in_basket.quantity}
+                                        disabled={inputQtyLoading[pkg.id]}
+                                        class="h-6 w-16 text-xs"
+                                        onEnter={async () => handleQty(pkg)}
+                                    />
+                                </div>
+                                <p class="text-xs text-neutral-400">
+                                    Price: <span class="text-yellow-400">{pkg.in_basket.price} {basket.currency}</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Tooltip>
+                                    {#snippet trigger()}
+                                        <Button size="sm" iconName="error" onclick={() => removeFromBasket(basket.ident, pkg.id, pkg.name)} />
+                                    {/snippet}
+                                    Remove from basket
+                                </Tooltip>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+                <div class="w-full md:max-h-80 md:w-[50%] md:overflow-y-auto" style="scrollbar-width: none;">
+                    <!-- Coupon Section -->
+                    <div class="w-full space-y-2">
+                        <h3 class="font-minecrafter text-left text-sm">Apply Discount Code</h3>
+                        <div class="w-full space-y-2">
+                            <!-- Type Selector -->
+                            <Select
+                                bind:value={couponType}
+                                items={couponTypeOptions}
+                                placeholder="Select discount type"
+                                onValueChange={() => {
+                                    couponCode = "";
+                                }}
+                            />
+                            <!-- Input Section -->
+                            <div class="flex w-full flex-col gap-2">
+                                <Input
+                                    bind:value={couponCode}
+                                    placeholder={couponType === "coupons"
+                                        ? "Enter coupon code"
+                                        : couponType === "giftcards"
+                                          ? "Enter gift card number"
+                                          : "Enter creator code"}
+                                    class="flex-1"
+                                    onEnter={handleApplyCoupon}
+                                />
+                                <Button onclick={handleApplyCoupon} loading={applyCouponLoading} disabled={!couponCode.trim()} size="sm">
+                                    {applyCouponLoading ? "Applying..." : "Apply"}
+                                </Button>
+                            </div>
+                        </div>
+
+                        <!-- Applied Discounts -->
+                        {#if basket.coupons?.length > 0 || basket.giftcards?.length > 0 || basket.creator_code}
+                            <div class="w-full space-y-2">
+                                {#each couponTypeOptions as option}
+                                    {@const items =
+                                        option.value === "coupons"
+                                            ? basket.coupons
+                                            : option.value === "giftcards"
+                                              ? basket.giftcards
+                                              : basket.creator_code
+                                                ? [{ code: basket.creator_code }]
+                                                : []}
+                                    {#if items?.length > 0}
+                                        <div class="w-full space-y-2">
+                                            <h4 class="font-minecrafter text-left text-xs">
+                                                Applied {option.label}s
+                                            </h4>
+                                            {#each items as item}
+                                                <div
+                                                    in:fly={{ y: -20, duration: 200 }}
+                                                    out:fly={{ y: 20, duration: 200 }}
+                                                    class="flex items-center justify-between gap-2 border-2 border-neutral-700 bg-neutral-800 p-2"
+                                                >
+                                                    <div class="flex items-center gap-2">
+                                                        <img src="/icons/{option.iconName}.webp" alt={option.label} class="h-4" />
+                                                        <div>
+                                                            <span
+                                                                class="text-xs {option.value === 'coupons'
+                                                                    ? 'text-green-400'
+                                                                    : option.value === 'giftcards'
+                                                                      ? 'text-yellow-400'
+                                                                      : 'text-blue-400'}"
+                                                            >
+                                                                {"code" in item ? item.code : `****${`${item.card_number}`.slice(-4)}`}
+                                                            </span>
+                                                            <p class="text-xs text-neutral-400">{option.label} Applied</p>
+                                                        </div>
+                                                    </div>
+                                                    <Tooltip>
+                                                        {#snippet trigger()}
+                                                            <Button
+                                                                size="sm"
+                                                                iconName="error"
+                                                                onclick={() =>
+                                                                    removeCoupon(
+                                                                        basket.ident,
+                                                                        "code" in item ? item.code : item.card_number,
+                                                                        option.value as ApplyType,
+                                                                    )}
+                                                            />
+                                                        {/snippet}
+                                                        Remove {option.label.toLowerCase()}
+                                                    </Tooltip>
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    {/if}
+                                {/each}
+                            </div>
+                        {/if}
                     </div>
                 </div>
-
-                <!-- Applied Discounts -->
-                {#if basket.coupons?.length > 0 || basket.giftcards?.length > 0 || basket.creator_code}
-                    <div class="space-y-2">
-                        {#each couponTypeOptions as option}
-                            {@const items =
-                                option.value === "coupons"
-                                    ? basket.coupons
-                                    : option.value === "giftcards"
-                                      ? basket.giftcards
-                                      : basket.creator_code
-                                        ? [{ code: basket.creator_code }]
-                                        : []}
-                            {#if items?.length > 0}
-                                <div class="space-y-2">
-                                    <h4 class="font-minecrafter text-left text-xs">
-                                        Applied {option.label}s
-                                    </h4>
-                                    {#each items as item}
-                                        <div
-                                            in:fly={{ y: -20, duration: 200 }}
-                                            out:fly={{ y: 20, duration: 200 }}
-                                            class="flex items-center justify-between gap-2 border-2 border-neutral-700 bg-neutral-800 p-2"
-                                        >
-                                            <div class="flex items-center gap-2">
-                                                <img src="/icons/{option.iconName}.webp" alt={option.label} class="h-4" />
-                                                <div>
-                                                    <span
-                                                        class="text-xs {option.value === 'coupons'
-                                                            ? 'text-green-400'
-                                                            : option.value === 'giftcards'
-                                                              ? 'text-yellow-400'
-                                                              : 'text-blue-400'}"
-                                                    >
-                                                        {"code" in item ? item.code : `****${`${item.card_number}`.slice(-4)}`}
-                                                    </span>
-                                                    <p class="text-xs text-neutral-400">{option.label} Applied</p>
-                                                </div>
-                                            </div>
-                                            <Tooltip>
-                                                {#snippet trigger()}
-                                                    <Button
-                                                        size="sm"
-                                                        iconName="error"
-                                                        onclick={() =>
-                                                            removeCoupon(
-                                                                basket.ident,
-                                                                "code" in item ? item.code : item.card_number,
-                                                                option.value as ApplyType,
-                                                            )}
-                                                    />
-                                                {/snippet}
-                                                Remove {option.label.toLowerCase()}
-                                            </Tooltip>
-                                        </div>
-                                    {/each}
-                                </div>
-                            {/if}
-                        {/each}
-                    </div>
-                {/if}
             </div>
-            <div class="border-t-2 border-neutral-700"></div>
+        {/if}
+        <div class="mt-2 flex w-full flex-col items-center justify-center gap-2">
             <!-- Total Price & Action Buttons -->
-            <div>
-                <div class="flex items-center justify-between rounded bg-neutral-900 p-2 text-lg">
+            {#if basket.packages.length > 0}
+                <div class="flex w-full items-center justify-between bg-neutral-900 text-lg">
                     <span>Total:</span>
                     <span class="text-yellow-400">
                         {basket.total_price}
                         {basket.currency}
                     </span>
                 </div>
-                <!-- Action Buttons -->
-                <div class="flex flex-col gap-2">
+            {/if}
+            <div class="flex w-full flex-col gap-2 md:flex-row-reverse">
+                {#if basket.packages.length > 0}
                     <Button onclick={initiateCheckout} size="sm">Buy Now</Button>
-                </div>
+                {/if}
+                <Button
+                    onclick={() => {
+                        hidePopup("basketPopup");
+                    }}
+                    size="sm"
+                >
+                    Continue Shopping
+                </Button>
             </div>
         </div>
-    {/if}
-    <div class="mt-2">
-        <Button
-            onclick={() => {
-                hidePopup("basketPopup");
-            }}
-            size="sm"
-        >
-            Continue Shopping
-        </Button>
     </div>
 </Popup>
 
