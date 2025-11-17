@@ -1,5 +1,5 @@
 {
-    "totalAssets": 36,
+    "totalAssets": 38,
     "assets": [
         "/favicon.webp",
         "/icons/arrow_down.webp",
@@ -8,6 +8,7 @@
         "/icons/arrow_up.webp",
         "/icons/chest.webp",
         "/icons/cmd_block.webp",
+        "/icons/cmd_block_purple.webp",
         "/icons/cupon.webp",
         "/icons/discord.webp",
         "/icons/error.webp",
@@ -18,6 +19,7 @@
         "/icons/loading.webp",
         "/icons/mc_bedrock.webp",
         "/icons/mc_java.webp",
+        "/icons/no_ping.webp",
         "/icons/success.webp",
         "/icons/switch_off.webp",
         "/icons/switch_on.webp",

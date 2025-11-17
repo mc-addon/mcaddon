@@ -9,7 +9,7 @@
         title = "",
         description = "Welcome to the official hub of MC Addon! A competitive, community-driven Lifesteal Minecraft Network with thrilling mechanics, epic events, and intense mini-games!",
         image = "/favicon.webp",
-        author = "MC Addon Network",
+        author = "Addon Network",
     }: Props = $props();
 </script>
 

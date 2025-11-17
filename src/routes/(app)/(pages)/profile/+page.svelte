@@ -6,6 +6,7 @@
     import Popup from "$lib/components/ui/Popup.svelte";
     import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
+    import Toggle from "$lib/components/ui/Toggle.svelte";
     import { getUserAvatar } from "$lib/discord/user";
     import { toast } from "svelte-sonner";
     import type { Package } from "tebex_headless";
@@ -36,6 +37,9 @@
     let specialPkgs: Package[] = $derived(data.pkgs?.filter((pkg) => specialPkgIDs.includes(pkg.id)) || []);
     let adminUserInput: string = $state("");
     let selectedPkgID: string = $state(""); // For select popup
+    let ipCommand: boolean = $derived(data.settings?.discordBot?.ipCommand || false);
+    let serverMaintenance: boolean = $derived(data.settings?.discordBot?.serverMaintenance || false);
+    let discordBotSettingsDisabled: boolean = $state(false);
 
     async function updateServerSettings() {
         if (!javaServerIP.trim()) {
@@ -286,6 +290,66 @@
             error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
         });
     }
+
+    async function toggleIPCommand() {
+        discordBotSettingsDisabled = true;
+        const promise = fetch("/api/admin/settings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                key: "discordBot",
+                value: {
+                    ...data.settings?.discordBot,
+                    ipCommand: !ipCommand,
+                },
+            }),
+        }).then(async (response) => {
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to update Discord bot settings.");
+            }
+            discordBotSettingsDisabled = false;
+            invalidateAll();
+            return result;
+        });
+        toast.promise(promise, {
+            loading: "Updating Discord bot settings...",
+            success: "IP Command is now " + (!ipCommand ? "enabled" : "disabled") + "!",
+            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
+        });
+    }
+
+    async function toggleServerMaintenance() {
+        discordBotSettingsDisabled = true;
+        const promise = fetch("/api/admin/settings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                key: "discordBot",
+                value: {
+                    ...data.settings?.discordBot,
+                    serverMaintenance: !serverMaintenance,
+                },
+            }),
+        }).then(async (response) => {
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to update Discord bot settings.");
+            }
+            discordBotSettingsDisabled = false;
+            invalidateAll();
+            return result;
+        });
+        toast.promise(promise, {
+            loading: "Updating Discord bot settings...",
+            success: "Server Maintenance is now " + (!serverMaintenance ? "enabled" : "disabled") + "!",
+            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
+        });
+    }
 </script>
 
 <Seo title={data.user?.global_name || data.user?.username} />
@@ -443,6 +507,31 @@
                                 <Button onclick={updateDiscordSettings}>Update Discord Settings</Button>
                             </div>
                         </Popup>
+
+                        <!-- Discord Bot -->
+                        <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
+                            <h3 class="font-minecrafter mb-2 text-lg">Discord Bot</h3>
+                            <div class="flex flex-col gap-2 text-left">
+                                <div class="flex items-center gap-2">
+                                    <img src="/icons/cmd_block_purple.webp" alt="IP" class="h-10" />
+                                    <div class="flex items-center gap-2">
+                                        <p>IP Command</p>
+                                        <Toggle bind:status={ipCommand} onclick={toggleIPCommand} disabled={discordBotSettingsDisabled} />
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="/icons/no_ping.webp" alt="IP" class="h-6" />
+                                    <div class="flex items-center gap-2">
+                                        <p>Server Maintenance</p>
+                                        <Toggle
+                                            bind:status={serverMaintenance}
+                                            onclick={toggleServerMaintenance}
+                                            disabled={discordBotSettingsDisabled}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Admin Management -->
                         <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
