@@ -32,7 +32,7 @@
 
 <Seo />
 <div class="p-base flex size-full flex-col items-center justify-center gap-5 overflow-hidden lg:gap-14">
-    <Title class="top-0 w-80 md:w-140 2xl:w-250" />
+    <Title title="mcaddon_launch" class="top-0 w-80 md:w-140 2xl:w-250" />
     <div class="flex w-80 flex-col items-center gap-2 sm:w-80 md:w-120 md:gap-5 2xl:w-220">
         <Button href="/status">Server Status</Button>
         <Button

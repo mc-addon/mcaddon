@@ -78,6 +78,20 @@ body {
         filter: drop-shadow(0 0 2px rgba(var(--glow-color), 0.6)) drop-shadow(0 0 4px rgba(var(--glow-color), 0.4))
             drop-shadow(0 0 12px rgba(var(--glow-color), 0));
     }
+
+    .special-gradient-bg {
+        background: linear-gradient(270deg, var(--color-red-500), var(--color-red-700), var(--color-red-500));
+        background-size: 200% 100%;
+        animation: sale-rotate 2s linear infinite;
+        will-change: background-position;
+    }
+
+    .sale-gradient-bg {
+        background: linear-gradient(270deg, var(--color-green-500), var(--color-green-700), var(--color-green-500));
+        background-size: 200% 100%;
+        animation: sale-rotate 2s linear infinite;
+        will-change: background-position;
+    }
 }
 
 @keyframes special-card {
@@ -97,6 +111,15 @@ body {
         background-position: 0% 50%;
     }
     100% {
+        background-position: 200% 50%;
+    }
+}
+
+@keyframes sale-rotate {
+    from {
+        background-position: 0% 50%;
+    }
+    to {
         background-position: 200% 50%;
     }
 }

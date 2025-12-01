@@ -54,8 +54,18 @@ ${data.pkg.expiration_date ? `Expiration Date: ${data.pkg.expiration_date}` : ""
                         <p>
                             Category: <span class="font-bold text-yellow-400">{data.pkg.category.name}</span>
                         </p>
-                        <p>
-                            Price: <span class="font-bold text-yellow-400">{data.pkg.total_price} {data.pkg.currency}</span>
+                        <p class="flex items-center justify-start gap-2 text-left">
+                            <span>Price:</span>
+                            {#if data.pkg.discount}
+                                <span class="font-serif text-xl text-red-500 line-through">
+                                    {(Number(data.pkg.total_price) + Number(data.pkg.discount)).toFixed(2)}
+                                    {data.pkg.currency}
+                                </span>
+                            {/if}
+                            <span class="text-yellow-400">
+                                {data.pkg.total_price}
+                                {data.pkg.currency}
+                            </span>
                         </p>
                         {#if data.pkg.expiration_date}
                             <p>

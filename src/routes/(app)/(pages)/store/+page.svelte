@@ -66,10 +66,17 @@
                             {isSpecial ? 'border-transparent' : 'border-neutral-700 hover:border-neutral-500'} box-border"
                             class:special-card={isSpecial}
                         >
-                            {#if isSpecial}
+                            {#if isSpecial || pkg.discount}
                                 <div class="absolute top-4 -left-8 z-10 w-40 -rotate-32 transform">
-                                    <div class="text-shadow-mc bg-red-600 px-8 py-1 text-center text-xs font-bold ring-2 ring-red-400/30">
-                                        Special
+                                    <div
+                                        class="text-shadow-mc px-8 py-1 text-center text-xs font-bold ring-2
+                                        {isSpecial ? 'ring-red-400/30' : 'ring-green-400/30'}"
+                                        class:special-gradient-bg={isSpecial}
+                                        class:sale-gradient-bg={!isSpecial}
+                                    >
+                                        {isSpecial
+                                            ? "Special"
+                                            : `${((Number(pkg.discount) / (Number(pkg.total_price) + Number(pkg.discount))) * 100).toFixed(0)}% off`}
                                     </div>
                                 </div>
                             {/if}
@@ -91,8 +98,18 @@
                                         </p>
                                     </div>
                                 </div>
-                                <p class="text-left text-sm">
-                                    Price: <span class="font-bold text-yellow-400">{pkg.total_price} {pkg.currency}</span>
+                                <p class="flex items-center justify-start gap-2 text-left text-sm">
+                                    <span>Price:</span>
+                                    {#if pkg.discount}
+                                        <span class="font-serif text-lg text-red-500 line-through">
+                                            {(Number(pkg.total_price) + Number(pkg.discount)).toFixed(2)}
+                                            {pkg.currency}
+                                        </span>
+                                    {/if}
+                                    <span class="text-yellow-400">
+                                        {pkg.total_price}
+                                        {pkg.currency}
+                                    </span>
                                 </p>
                                 <div class="flex w-full items-center justify-between gap-2">
                                     <Tooltip>
