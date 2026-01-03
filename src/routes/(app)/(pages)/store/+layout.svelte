@@ -25,7 +25,7 @@
 
     let { data, children }: { data: LayoutData; children: any } = $props();
 
-    let basket = $state<Basket>(data.basket);
+    let basket = $derived<Basket>(data.basket);
     let couponCode = $state<string>("");
     let applyCouponLoading = $state<boolean>(false);
     let couponType = $state<ApplyType>("coupons");
@@ -139,7 +139,7 @@
                             class="flex items-center gap-2 border-2 border-neutral-700 bg-neutral-800 p-2"
                         >
                             <div
-                                class="size-15 flex-shrink-0 bg-neutral-700 bg-cover bg-center bg-no-repeat"
+                                class="size-15 shrink-0 bg-neutral-700 bg-cover bg-center bg-no-repeat"
                                 style="background-image: url({pkg.image});"
                             ></div>
                             <div class="min-w-0 flex-1">

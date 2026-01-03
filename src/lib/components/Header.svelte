@@ -17,7 +17,7 @@
 
 <div
     class={cn(
-        "bg-neutral-500 bg-[length:20em] bg-left shadow-[inset_0.14em_0.14em_0_var(--color-neutral-400)] [image-rendering:pixelated]",
+        "bg-neutral-500 bg-size-[20em] bg-left shadow-[inset_0.14em_0.14em_0_var(--color-neutral-400)] [image-rendering:pixelated]",
         "text-shadow-mc",
         "relative flex items-center justify-center",
         "outline-2 outline-neutral-950",

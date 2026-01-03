@@ -11,7 +11,7 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let input = $state<string>(data.mc ? data.mc.username : "");
+    let input = $derived<string>(data.mc ? data.mc.username : "");
     let inputImage = $derived(input ? { src: `https://cravatar.eu/avatar/${input}/600`, alt: input } : { src: "", alt: "" });
     let loading = $state<boolean>(false);
 
@@ -32,7 +32,7 @@
 
 <Seo />
 <div class="p-base flex size-full flex-col items-center justify-center gap-5 overflow-hidden lg:gap-14">
-    <Title title="mcaddon_launch" class="top-0 w-80 md:w-140 2xl:w-250" />
+    <Title title="mcaddon" class="top-0 w-80 md:w-140 2xl:w-250" />
     <div class="flex w-80 flex-col items-center gap-2 sm:w-80 md:w-120 md:gap-5 2xl:w-220">
         <Button href="/status">Server Status</Button>
         <Button
@@ -57,7 +57,7 @@
                         img={data.mc ? { src: `https://cravatar.eu/avatar/${data.mc?.username}/600`, alt: data.mc?.username } : { src: "", alt: "" }}
                         onclick={() => (input = data.mc ? data.mc.username : "")}
                     >
-                        {data.mc ? data.mc.username.slice(0, 8) + "..." : "Minecraft"}
+                        {data.mc ? (data.mc.username.length > 8 ? data.mc.username.slice(0, 8) + "..." : data.mc.username) : "Minecraft"}
                     </Button>
                 {/snippet}
                 <div class="flex w-full flex-col gap-2">

@@ -1,5 +1,5 @@
 {
-    "totalAssets": 39,
+    "totalAssets": 38,
     "assets": [
         "/favicon.webp",
         "/icons/arrow_down.webp",
@@ -36,7 +36,6 @@
         "/textures/button.webp",
         "/textures/special_card.webp",
         "/titles/mcaddon.webp",
-        "/titles/mcaddon_launch.webp",
         "/titles/profile.webp",
         "/titles/status.webp",
         "/titles/store.webp"

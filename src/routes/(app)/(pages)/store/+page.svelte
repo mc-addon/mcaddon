@@ -9,7 +9,7 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let basket = $state<Basket>(data.basket);
+    let basket = $derived<Basket>(data.basket);
 
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {

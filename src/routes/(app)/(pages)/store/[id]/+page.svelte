@@ -4,17 +4,13 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import { basketStore } from "$lib/stores/basket";
     import { basketCooldownManager, buyNow } from "$lib/tebex";
-    import { error } from "@sveltejs/kit";
     import { toast } from "svelte-sonner";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    if (!data.pkg) {
-        throw error(404, "Package not found");
-    }
 
-    let basket = $state(data.basket);
-    const isSpecial = data.specialPkgIDs?.includes(data.pkg.id) || false;
+    let basket = $derived(data.basket);
+    const isSpecial = $derived(data.specialPkgIDs?.includes(data.pkg?.id ?? 0) || false);
 
     // Subscribe to basket store updates
     basketStore.subscribe((newBasket) => {
