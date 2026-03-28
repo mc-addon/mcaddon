@@ -2,95 +2,93 @@
 
 ![MC Addon](./assets/banner.png)
 
-Official MC Addon Website
+# MC Addon
+
+A minimal companion site for Minecraft server management with Discord integration and Tebex store support.
 
 </div>
 
-## 🚩 Installation
+## 💫 Prerequisites
 
-1. Clone this repository
-    ```sh
-    git clone https://github.com/mc-addon/mcaddon mcaddon
-    cd mcaddon
-    ```
+| Tool                                                                                                                        | Type     | Version | Purpose                 |
+| --------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----------------------- |
+| [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/) | Required | 2.50+   | Source control          |
+| [![Bun](https://img.shields.io/badge/Bun-%23F472B6?style=for-the-badge&logo=bun&logoColor=%23FFFFFF)](https://bun.sh/)      | Required | 1.3+    | Runtime package manager |
 
-2. Install dependencies
-    ```sh
-    bun i
-    ```
-
-3. Create an application at the [Discord Developer Portal](https://discord.com/developers/applications).
-    ![New Application](./assets/new_app.png)
-
-4. Create `.env` file from `.env.example` in the root directory and fill in the required values.
-    <details>
-
-    <summary>ENV Vars</summary>
-
-    - Get `DATABASE_URL` from Supabase.
-        ![Supabase DB URL](./assets/db_url.png)
-    - Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
-        ![Client Info](./assets/client_info.png)
-    - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
-        ![Bot Token](./assets/bot_token.png)
-    - Get `JWT_SECRET` by running the following command.
-        ```sh
-        bun run gen-secret
-        ```
-    - Get `TEBEX_PRIVATE_KEY` and `PUBLIC_TEBEX_TOKEN` from the Tebex Dashboard.
-        ![Tebex Info](./assets/tebex.png)
-
-    </details>
-
-5. Add redirect url at the Discord Developer Portal.
-    ![Discord Developer Portal](./assets/redirect_url.png)
-
-6. Push the database schema.
-    ```sh
-    bun run db:push
-    ```
-7. Navigate to **Table Editor** in Supabase Dashboard and enable **RLS** for all the tables.
-
-8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
-    ![Policies](./assets/policies.png)
-
-9. Start the app
-   ```sh
-   bun run dev
-   ```
-
-> [!IMPORTANT]
-> When you add assets to the `/static` directory, run `bun run sync-assets` to save assets path to the `/static/assets.json` file.
-> The `/static/assets.json` file is used by the loading screen to preload assets.
+> [!NOTE]
+> *`wrangler` is required only for Cloudflare deployment.
 
 ## 🚀 Production
 
-1. Follow steps 1-8 from the [installation](#-installation) section.
+1. Clone this repository:
+   ```sh
+   git clone https://github.com/mc-addon/mcaddon
+   cd mcaddon
+   ```
 
-2. Login to your Cloudflare Account via `wrangler`.
+2. Install dependencies:
+   ```sh
+   bun i
+   ```
+3. Copy `.env` file and configure secrets
     ```sh
-    bunx wrangler login
+    cp .env.example .env
+    ```
+> [!TIP]
+> Check [environment variables](#-environment-variables) section for details on the environment variables.
+
+4. Initialize database schema
+    ```sh
+    bun run db:push
     ```
 
-3. Create `wrangler.toml` file from `example.wrangler.toml` in the root directory and fill in the required values.
-    > *Refer step 4 from the [installation](#-installation) section for ENV Vars.*
-
-4. Deploy
+5. Sync static assets
     ```sh
-    bun run deploy
+    bun run sync-assets
     ```
 
+6. Authenticate with Cloudflare
+   ```sh
+   bunx wrangler login
+   ```
+
+7. Copy `example.wrangler.toml` to `wrangler.toml` and configure it. (*For `[vars]` section, copy-paste the values from `.env`*)
+
+8. Deploy
+   ```sh
+   bun run deploy
+   ```
+
+## 🛸 Development
+
+1. Follow first 3 steps from the [production](#-production) section.
+
+2. Start development server
+    ```sh
+    bun run dev
+    ```
+
+## 🔑 Environment Variables
+
+| Variable                      | Type     | Description                       |
+| ----------------------------- | -------- | --------------------------------- |
+| `PUBLIC_DISCORD_URL`          | `string` | Discord API base URI              |
+| `PUBLIC_MCSTATUS_JAVA_API`    | `string` | Java server status API            |
+| `PUBLIC_MCSTATUS_BEDROCK_API` | `string` | Bedrock server status API         |
+| `DATABASE_URL`                | `string` | Supabase connection string        |
+| `DISCORD_CLIENT_ID`           | `string` | Discord client ID                 |
+| `DISCORD_CLIENT_SECRET`       | `string` | Discord client secret             |
+| `DISCORD_BOT_TOKEN`           | `string` | Discord bot token                 |
+| `JWT_SECRET`                  | `string` | Secret key for JWT signin         |
+| `PUBLIC_TEBEX_TOKEN`          | `string` | Public Tebex token for API access |
+| `TEBEX_PRIVATE_KEY`           | `string` | Private key for Tebex API         |
 
 ## ❤️ Contributing
 
-- Things to keep in mind
-    - Follow our commit message convention.
-    - Write meaningful commit messages.
-    - Keep the code clean and readable.
-    - Make sure the app is working as expected.
-
-- Code Formatting
-    - Run `bun run format` before committing your changes or use [`Prettier`](https://prettier.io/) extension in your code editor.
-    - Make sure to commit error free code. Run `bun run check` to check for any errors.
-
-- Check [STYLES.MD](./STYLES.MD) for the CSS style guide.
+- Follow commit conventions.
+- Keep code style consistent.
+- Run formatting and checks before pushing
+    ```sh
+    bun run format && bun run check
+    ```
+- See [`STYLES.md`](./STYLES.MD) for style guidelines.
