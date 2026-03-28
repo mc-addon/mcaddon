@@ -62,7 +62,7 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
 
 ## 🛸 Development
 
-1. Follow first 3 steps from the [production](#-production) section.
+1. Follow first 5 steps from the [production](#-production) section.
 
 2. Start development server
     ```sh
