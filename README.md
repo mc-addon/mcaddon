@@ -15,9 +15,6 @@ A minimal companion site for Minecraft server management with Discord integratio
 | [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/) | Required | 2.50+   | Source control          |
 | [![Bun](https://img.shields.io/badge/Bun-%23F472B6?style=for-the-badge&logo=bun&logoColor=%23FFFFFF)](https://bun.sh/)      | Required | 1.3+    | Runtime package manager |
 
-> [!NOTE]
-> *`wrangler` is required only for Cloudflare deployment.
-
 ## 🚀 Production
 
 1. Clone this repository:
