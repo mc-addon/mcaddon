@@ -4,7 +4,7 @@
 
 # MC Addon
 
-A minimal companion site for Minecraft server management with Discord integration and Tebex store support.
+Official MC Addon Website
 
 </div>
 
