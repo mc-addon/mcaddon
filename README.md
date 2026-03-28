@@ -8,6 +8,10 @@ Official MC Addon Website
 
 </div>
 
+## 📸 Preview
+
+https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
+
 ## 💫 Prerequisites
 
 | Tool                                                                                                                        | Type     | Version | Purpose                 |
