@@ -2,26 +2,22 @@ import { eq } from "drizzle-orm";
 import type { DB } from ".";
 import * as schema from "./schema";
 
-export async function fetchSettings<K extends keyof schema.SettingsMap>(db: DB, setting: K): Promise<schema.SettingsMap[K] | null>;
-export async function fetchSettings(db: DB): Promise<Partial<schema.SettingsMap>>;
-export async function fetchSettings<K extends keyof schema.SettingsMap>(
+export async function fetchSettings<K extends schema.SettingsKeys>(db: DB, setting: K): Promise<schema.SelectSettings[K] | null>;
+export async function fetchSettings(db: DB): Promise<schema.SelectSettings | null>;
+export async function fetchSettings<K extends schema.SettingsKeys>(
     db: DB,
     setting?: K,
-): Promise<schema.SettingsMap[K] | null | Partial<schema.SettingsMap>> {
+): Promise<schema.SelectSettings | schema.SelectSettings[K] | null> {
+    // The settings table is expected to have a single row with id = 1.
+    const result = await db.query.settingsTable.findFirst({ where: eq(schema.settingsTable.id, 1) });
+
+    if (!result) {
+        return null;
+    }
+
     if (setting !== undefined) {
-        return db.query.settingsTable
-            .findFirst({
-                where: eq(schema.settingsTable.key, setting),
-            })
-            .then((result) => result?.value as schema.SettingsMap[K] | null);
+        return result[setting] ?? null;
     }
 
-    const allSettings = await db.query.settingsTable.findMany();
-    const settingsObject = {} as Partial<schema.SettingsMap>;
-
-    for (const setting of allSettings) {
-        (settingsObject as Record<string, unknown>)[setting.key] = setting.value;
-    }
-
-    return settingsObject;
+    return result;
 }

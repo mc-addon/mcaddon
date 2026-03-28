@@ -6,7 +6,6 @@
     import Popup from "$lib/components/ui/Popup.svelte";
     import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
-    import Toggle from "$lib/components/ui/Toggle.svelte";
     import { getUserAvatar } from "$lib/discord/user";
     import { toast } from "svelte-sonner";
     import type { Package } from "tebex_headless";
@@ -28,18 +27,15 @@
     }
 
     // Admin settings state
-    let javaServerIP: string = $derived(data.settings?.minecraftServer?.java?.ip || "");
-    let bedrockServerIP: string = $derived(data.settings?.minecraftServer?.bedrock?.ip || "");
-    let bedrockServerPort: number = $derived(data.settings?.minecraftServer?.bedrock?.port || 19132);
-    let discordInvite: string = $derived(data.settings?.guild?.invite || "");
-    let discordID: string = $derived(data.settings?.guild?.id || "");
+    let javaServerIP: string = $derived(data.settings?.minecraftJavaIP || "");
+    let bedrockServerIP: string = $derived(data.settings?.minecraftBedrockIP || "");
+    let bedrockServerPort: number = $derived(data.settings?.minecraftBedrockPort || 19132);
+    let discordInvite: string = $derived(data.settings?.guildInvite || "");
+    let discordID: string = $derived(data.settings?.guildId || "");
     let specialPkgIDs: number[] = $derived(data.settings?.specialPkgIDs || []);
     let specialPkgs: Package[] = $derived(data.pkgs?.filter((pkg) => specialPkgIDs.includes(pkg.id)) || []);
     let adminUserInput: string = $state("");
     let selectedPkgID: string = $state(""); // For select popup
-    let ipCommand: boolean = $derived(data.settings?.discordBot?.ipCommand || false);
-    let serverMaintenance: boolean = $derived(data.settings?.discordBot?.serverMaintenance || false);
-    let discordBotSettingsDisabled: boolean = $state(false);
 
     async function updateServerSettings() {
         if (!javaServerIP.trim()) {
@@ -57,32 +53,37 @@
             return;
         }
 
-        const promise = fetch("/api/admin/settings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                key: "minecraftServer",
-                value: {
-                    java: {
-                        ip: javaServerIP.trim(),
-                    },
-                    bedrock: {
-                        ip: bedrockServerIP.trim(),
-                        port: bedrockPort,
-                    },
+        const promise = Promise.all([
+            fetch("/api/admin/settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
+                body: JSON.stringify({ key: "minecraftJavaIP", value: javaServerIP.trim() }),
             }),
-        }).then(async (response) => {
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || "An error occurred while updating server settings.");
+            fetch("/api/admin/settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ key: "minecraftBedrockIP", value: bedrockServerIP.trim() }),
+            }),
+            fetch("/api/admin/settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ key: "minecraftBedrockPort", value: bedrockPort }),
+            }),
+        ]).then(async (responses) => {
+            for (const response of responses) {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || "An error occurred while updating server settings.");
+                }
             }
-
             invalidateAll();
-            return result;
+            return { success: true };
         });
 
         toast.promise(promise, {
@@ -98,24 +99,30 @@
             return;
         }
 
-        const promise = fetch("/api/admin/settings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                key: "guild",
-                value: { invite: discordInvite.trim(), id: discordID.trim() },
+        const promise = Promise.all([
+            fetch("/api/admin/settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ key: "guildInvite", value: discordInvite.trim() }),
             }),
-        }).then(async (response) => {
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || "An error occurred while updating Discord settings.");
+            fetch("/api/admin/settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ key: "guildId", value: discordID.trim() }),
+            }),
+        ]).then(async (responses) => {
+            for (const response of responses) {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || "An error occurred while updating Discord settings.");
+                }
             }
-
             invalidateAll();
-            return result;
+            return { success: true };
         });
 
         toast.promise(promise, {
@@ -185,7 +192,7 @@
 
     async function removeAdmin(userID: string) {
         const currentAdmins = data.settings?.adminIDs || [];
-        const updatedAdmins = currentAdmins.filter((id) => id !== userID);
+        const updatedAdmins = currentAdmins.filter((id: string) => id !== userID);
 
         if (updatedAdmins.length === currentAdmins.length) {
             toast.error("User is not an admin.");
@@ -290,66 +297,6 @@
             error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
         });
     }
-
-    async function toggleIPCommand() {
-        discordBotSettingsDisabled = true;
-        const promise = fetch("/api/admin/settings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                key: "discordBot",
-                value: {
-                    ...data.settings?.discordBot,
-                    ipCommand: !ipCommand,
-                },
-            }),
-        }).then(async (response) => {
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || "Failed to update Discord bot settings.");
-            }
-            discordBotSettingsDisabled = false;
-            invalidateAll();
-            return result;
-        });
-        toast.promise(promise, {
-            loading: "Updating Discord bot settings...",
-            success: "IP Command is now " + (!ipCommand ? "enabled" : "disabled") + "!",
-            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
-        });
-    }
-
-    async function toggleServerMaintenance() {
-        discordBotSettingsDisabled = true;
-        const promise = fetch("/api/admin/settings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                key: "discordBot",
-                value: {
-                    ...data.settings?.discordBot,
-                    serverMaintenance: !serverMaintenance,
-                },
-            }),
-        }).then(async (response) => {
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || "Failed to update Discord bot settings.");
-            }
-            discordBotSettingsDisabled = false;
-            invalidateAll();
-            return result;
-        });
-        toast.promise(promise, {
-            loading: "Updating Discord bot settings...",
-            success: "Server Maintenance is now " + (!serverMaintenance ? "enabled" : "disabled") + "!",
-            error: (error) => (error instanceof Error ? error.message : "An unexpected error occurred."),
-        });
-    }
 </script>
 
 <Seo title={data.user?.global_name || data.user?.username} />
@@ -403,7 +350,7 @@
                                     <div>
                                         <p class="text-xs text-neutral-400">Java Edition</p>
                                         <p class="font-bold text-yellow-400">
-                                            {data.settings?.minecraftServer?.java?.ip || "Not set"}
+                                            {data.settings?.minecraftJavaIP || "0.0.0.0"}
                                         </p>
                                     </div>
                                 </div>
@@ -412,9 +359,9 @@
                                     <div>
                                         <p class="text-xs text-neutral-400">Bedrock Edition</p>
                                         <p class="font-bold text-yellow-400">
-                                            {data.settings?.minecraftServer?.bedrock?.ip || "Not set"}
+                                            {data.settings?.minecraftBedrockIP || "0.0.0.0"}
                                             :
-                                            {data.settings?.minecraftServer?.bedrock?.port || "Not set"}
+                                            {data.settings?.minecraftBedrockPort || "19132"}
                                         </p>
                                     </div>
                                 </div>
@@ -484,14 +431,14 @@
                                     <img src="/icons/discord.webp" alt="Discord" class="h-6" />
                                     <div>
                                         <p class="text-xs text-neutral-400">Discord Invite</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.guild?.invite || "Not set"}</p>
+                                        <p class="font-bold text-yellow-400">{data.settings?.guildInvite || "Not set"}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <img src="/icons/info.webp" alt="Discord" class="h-6" />
                                     <div>
                                         <p class="text-xs text-neutral-400">Discord Guild ID</p>
-                                        <p class="font-bold text-yellow-400">{data.settings?.guild?.id || "Not set"}</p>
+                                        <p class="font-bold text-yellow-400">{data.settings?.guildId || "Not set"}</p>
                                     </div>
                                 </div>
                             </div>
@@ -507,31 +454,6 @@
                                 <Button onclick={updateDiscordSettings}>Update Discord Settings</Button>
                             </div>
                         </Popup>
-
-                        <!-- Discord Bot -->
-                        <div class="border-2 border-neutral-700 bg-neutral-900 p-4">
-                            <h3 class="font-minecrafter mb-2 text-lg">Discord Bot</h3>
-                            <div class="flex flex-col gap-2 text-left">
-                                <div class="flex items-center gap-2">
-                                    <img src="/icons/cmd_block_purple.webp" alt="IP" class="h-10" />
-                                    <div class="flex items-center gap-2">
-                                        <p>IP Command</p>
-                                        <Toggle bind:status={ipCommand} onclick={toggleIPCommand} disabled={discordBotSettingsDisabled} />
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <img src="/icons/no_ping.webp" alt="IP" class="h-6" />
-                                    <div class="flex items-center gap-2">
-                                        <p>Server Maintenance</p>
-                                        <Toggle
-                                            bind:status={serverMaintenance}
-                                            onclick={toggleServerMaintenance}
-                                            disabled={discordBotSettingsDisabled}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Admin Management -->
                         <div class="border-2 border-neutral-700 bg-neutral-900 p-4">

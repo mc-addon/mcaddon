@@ -102,8 +102,8 @@
         };
 
         // Check if the server IP and port are set (differentiated for java/bedrock)
-        const ip = isBedrock ? data.server?.bedrock.ip : data.server?.java.ip;
-        const port = isBedrock ? data.server?.bedrock.port : true;
+        const ip = isBedrock ? data.bedrockIP : data.javaIP;
+        const port = isBedrock ? data.bedrockPort : true;
         if (!ip || !port) {
             statusSetter("offline");
             timeSetter(null);
@@ -221,17 +221,17 @@
             status: javaPingStatus,
             responseTime: javaResponseTime,
             data: javaServerData,
-            ip: data.server?.java.ip || "",
-            available: !!data.server?.java.ip,
+            ip: data.javaIP,
+            available: !!data.javaIP,
         },
         {
             name: "Bedrock Edition",
             status: bedrockPingStatus,
             responseTime: bedrockResponseTime,
             data: bedrockServerData,
-            ip: data.server?.bedrock.ip || "",
-            port: data.server?.bedrock.port || 19132, // Default port if settings are null
-            available: !!data.server?.bedrock.ip && !!data.server?.bedrock.port,
+            ip: data.bedrockIP,
+            port: data.bedrockPort,
+            available: !!data.bedrockIP && !!data.bedrockPort,
         },
     ]);
 </script>

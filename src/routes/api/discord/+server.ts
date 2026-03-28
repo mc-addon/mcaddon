@@ -11,8 +11,7 @@ export async function GET({ locals, setHeaders }) {
     if (!user) {
         return json({ error: "Unauthorized" }, { status: 401 });
     }
-    const guild = await fetchSettings(locals.db, "guild");
-    const guildID = guild?.id;
+    const guildID = await fetchSettings(locals.db, "guildId");
 
     if (!guildID) {
         return json({ error: "Guild ID not found in settings" }, { status: 404 });

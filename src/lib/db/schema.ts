@@ -1,30 +1,16 @@
-import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
-
-export interface SettingsMap {
-    adminIDs: string[];
-    guild: {
-        id: string;
-        invite: string;
-    };
-    minecraftServer: {
-        java: {
-            ip: string;
-        };
-        bedrock: {
-            ip: string;
-            port: number;
-        };
-    };
-    specialPkgIDs: number[];
-    discordBot: {
-        ipCommand: boolean;
-        serverMaintenance: boolean;
-    };
-}
-// NOTE: If you are adding new settings, ensure to update the SettingsMap interface accordingly
-// Also update the validation logic in the API handler in /api/admin/settings
+import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 export const settingsTable = pgTable("settings", {
-    key: text("key").$type<keyof SettingsMap>().primaryKey(),
-    value: jsonb("value").$type<SettingsMap[keyof SettingsMap]>().notNull(),
+    id: serial("id").primaryKey(), // Only one row expected
+    adminIDs: text("admin_ids").array().notNull().default([]),
+    guildId: text("guild_id"),
+    guildInvite: text("guild_invite"),
+    minecraftJavaIP: text("minecraft_java_ip"),
+    minecraftBedrockIP: text("minecraft_bedrock_ip"),
+    minecraftBedrockPort: integer("minecraft_bedrock_port"),
+    specialPkgIDs: integer("special_pkg_ids").array().default([]),
 });
+
+export type InsertSettings = typeof settingsTable.$inferInsert;
+export type SelectSettings = typeof settingsTable.$inferSelect;
+export type SettingsKeys = keyof SelectSettings;

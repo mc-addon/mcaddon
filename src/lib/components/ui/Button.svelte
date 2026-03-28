@@ -15,7 +15,7 @@
         size?: "sm" | "md" | "lg" | "xl" | "";
         type?: "default" | "div";
         flow?: boolean;
-        href?: string;
+        href?: string | null;
         disabled?: boolean;
         loading?: boolean;
         onclick?: (event: MouseEvent) => void;
@@ -30,7 +30,7 @@
         size = "md",
         type = "default",
         flow = true,
-        href = "",
+        href = null,
         disabled = $bindable(false),
         loading = $bindable(false),
         onclick = (event: MouseEvent) => {},
