@@ -64,7 +64,7 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
 
 1. Follow first 5 steps from the [production](#-production) section.
 
-2. Start development server
+2. Start the development server
     ```sh
     bun run dev
     ```
