@@ -84,6 +84,38 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
 | `PUBLIC_TEBEX_TOKEN`          | `string` | Public Tebex token for API access |
 | `TEBEX_PRIVATE_KEY`           | `string` | Private key for Tebex API         |
 
+### 📚 Getting database keys
+
+1. Host a PostgreSQL database (e.g. Local PostgreSQL, Supabase, etc.).
+
+2. Set connection string in `DATABASE_URL` environment variable.
+    ```
+    postgresql://<username>:<password>@<host>:<port>/<database>
+    ```
+> [!TIP]
+> For Supabase, you can find the connection string by clicking the `Connect` button at the top bar of the Supabase dashboard.
+> ![Supabase Database URL](./assets/db_url.png)
+
+### 🔮 Getting Discord OAuth keys
+
+- Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
+        ![Client Info](./assets/client_info.png)
+
+- Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
+    ![Bot Token](./assets/bot_token.png)
+
+### 💸 Getting Tebex keys
+
+1. Open Tebex dashboard and go to `Integration` > `API Keys`
+    ![Tebex](./assets/tebex.png)
+
+### 🪇 Other keys
+
+- Generate `JWT_SECRET` by running the following command.
+    ```sh
+    bun run gen-secret
+    ```
+
 ## ❤️ Contributing
 
 - Follow commit conventions.
