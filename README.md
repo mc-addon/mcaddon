@@ -106,7 +106,7 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
 
 ### 💸 Getting Tebex keys
 
-1. Open Tebex dashboard and go to `Integration` > `API Keys`
+- Open Tebex dashboard and go to `Integration` > `API Keys`
     ![Tebex](./assets/tebex.png)
 
 ### 🪇 Other keys
