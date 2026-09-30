@@ -13,6 +13,11 @@ Official MC Addon Webstore
 
 </div>
 
+> [!IMPORTANT]
+> This project is archived and no longer maintained.
+>
+> External services and dependencies may have changed, so parts of it may no longer work as expected.
+
 ## 📸 Preview
 
 https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
