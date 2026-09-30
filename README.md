@@ -4,7 +4,12 @@
 
 # MC Addon
 
-Official MC Addon Website
+Official MC Addon Webstore
+
+[![Svelte](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmc-addon%2Fmcaddon%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=%24.devDependencies%5B%22svelte%22%5D&style=for-the-badge&logo=svelte&logoColor=%23FFFFFF&label=Svelte&labelColor=%23FF3E00&color=%23000000)](https://svelte.dev/docs/svelte/overview)
+[![Tailwind CSS](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmc-addon%2Fmcaddon%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=%24.devDependencies%5B%22tailwindcss%22%5D&style=for-the-badge&logo=tailwindcss&logoColor=%23FFFFFF&label=Tailwind%20CSS&labelColor=%2306B6D4&color=%23000000)](https://tailwindcss.com)
+[![Drizzle ORM](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmc-addon%2Fmcaddon%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=%24.dependencies%5B%22drizzle-orm%22%5D&style=for-the-badge&logo=drizzle&logoColor=%23000000&label=Drizzle%20ORM&labelColor=%23C5F74F&color=%23000000)](https://orm.drizzle.team)
+[![License](https://img.shields.io/github/license/mc-addon/mcaddon?style=for-the-badge&logo=gnu&logoColor=%23FFFFFF&labelColor=%23A32D2A&color=%23000000)](https://github.com/mc-addon/mcaddon/blob/main/LICENSE)
 
 </div>
 
@@ -125,3 +130,10 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
     bun run format && bun run check
     ```
 - See [`STYLES.md`](./STYLES.MD) for style guidelines.
+
+## 🎨 Assets
+
+The code is licensed under [GPL-3.0](./LICENSE). Assets are not.
+
+- Minecraft textures & sounds belong to Mojang. Not affiliated with Mojang AB or Microsoft.
+- [Minecraftia](https://andrewtyler.gumroad.com) font by Andrew Tyler, licensed CC BY-SA.
