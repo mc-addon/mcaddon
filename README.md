@@ -103,11 +103,19 @@ https://github.com/user-attachments/assets/7d95cf4d-6f08-419d-b9c8-d6076feccb9d
 
 ### 🔮 Getting Discord OAuth keys
 
-- Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
-        ![Client Info](./assets/client_info.png)
+1. Create a new application in the [Discord Developer Portal](https://discord.com/developers/applications).
+    ![New App](./assets/new_app.png)
 
-- Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
+2. Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the `OAuth2` tab.
+    ![Client Info](./assets/client_info.png)
+
+3. In the same tab, add `<your-domain>/auth/callback` to `Redirects`. Add `http://localhost:5173/auth/callback` too for development.
+    ![Redirect URL](./assets/redirect_url.png)
+
+4. Get `DISCORD_BOT_TOKEN` from the `Bot` tab.
     ![Bot Token](./assets/bot_token.png)
+
+5. Invite the bot to your Discord server. It needs to be in the server to fetch its details.
 
 ### 💸 Getting Tebex keys
 
